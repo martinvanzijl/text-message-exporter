@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
                     // Add to list.
                     if (exportMessage) {
-                        printMessage(body, type, address, date);
-                        lstSms.add(body);
+                        String text = formatMessage(body, type, address, date);
+                        lstSms.add(text);
                     }
 
                     // Go to next record.
@@ -107,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
         return lstSms;
     }
 
-    private void printMessage(String body, int type, String address, Date date) {
+    private String formatMessage(String body, int type, String address, Date date) {
         String typeName = getMessageTypeName(type);
         String line = typeName + " at " + date + ":\n";
         line += body;
         line += "\nAddress: " + address;
         line += "\n---";
-        Log.i("Message", line);
+        return line;
     }
 
     // Get name for the message type.
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             FileWriter writer = new FileWriter(file);
             for (String message: textMessages) {
                 writer.write(message);
-                writer.write("\n---\n");
+                writer.write("\n");
             }
             writer.close();
 
