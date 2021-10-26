@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Export Text Messages</string>
     <string name="button_export_label">Export Text Messages</string>
+    <string name="filters_label">Filters:</string>
+    <string name="contact_label">Contact: All</string>
+    <string name="button_choose_contact_label">Choose Contact</string>
+    <string name="all_contacts_label">All Contacts</string>
 </resources>

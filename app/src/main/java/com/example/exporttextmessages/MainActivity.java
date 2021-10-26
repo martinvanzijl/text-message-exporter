@@ -4,18 +4,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
 
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.icu.text.DateFormat;
+import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Telephony;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +27,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EXPORT_MESSAGES = 1000;
+    private static final int REQUEST_CODE_CHOOSE_CONTACT = 2000;
+    private String m_filterContact = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +73,19 @@ public class MainActivity extends AppCompatActivity {
                     // Format date.
                     Date date = new Date(dateLong);
 
-                    // Print message.
-                    String typeName = getMessageTypeName(type);
-                    String line = typeName + " at " + date + ":\n";
-                    line += body;
-                    line += "\nAddress: " + address;
-                    line += "\n---";
-                    Log.i("Message", line);
+                    // Apply filter.
+                    boolean exportMessage = true;
+                    if (!m_filterContact.isEmpty()) {
+                        if (!PhoneNumberUtils.compare(address, m_filterContact)) {
+                            exportMessage = false;
+                        }
+                    }
 
                     // Add to list.
-                    lstSms.add(body);
+                    if (exportMessage) {
+                        printMessage(body, type, address, date);
+                        lstSms.add(body);
+                    }
 
                     // Go to next record.
                     c.moveToNext();
@@ -92,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return lstSms;
+    }
+
+    private void printMessage(String body, int type, String address, Date date) {
+        String typeName = getMessageTypeName(type);
+        String line = typeName + " at " + date + ":\n";
+        line += body;
+        line += "\nAddress: " + address;
+        line += "\n---";
+        Log.i("Message", line);
     }
 
     // Get name for the message type.
@@ -166,33 +183,122 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_EXPORT_MESSAGES) {
-            // Check if all results were granted.
-            boolean okToStart = true;
-            String missingPermission = "";
 
-            if (grantResults.length == 0) {
-                okToStart = false;
-            }
-            else {
-                for (int i = 0; i < grantResults.length; ++i) {
-                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                        missingPermission = permissions[i];
-                        okToStart = false;
-                        break;
-                    }
+        // Check if all results were granted.
+        boolean okToStart = true;
+        String missingPermission = "";
+
+        if (grantResults.length == 0) {
+            okToStart = false;
+        }
+        else {
+            for (int i = 0; i < grantResults.length; ++i) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    missingPermission = permissions[i];
+                    okToStart = false;
+                    break;
                 }
             }
+        }
 
-            // Export messages.
+        // Do the action.
+        if (requestCode == REQUEST_CODE_EXPORT_MESSAGES) {
             if (okToStart) {
                 exportTextMessages();
             }
             else {
-                String message = "Could not start service, since not all permissions were granted.";
+                String message = "Could not export messages.";
                 message += "\nMissing: " + missingPermission;
                 Log.w("Export", message);
             }
         }
+        else if (requestCode == REQUEST_CODE_CHOOSE_CONTACT) {
+            if (okToStart) {
+                chooseFilterContact();
+            }
+            else {
+                String message = "Could not choose contact.";
+                message += "\nMissing: " + missingPermission;
+                Log.w("Choose Contact", message);
+            }
+        }
+    }
+
+    public void onChooseContactClick(View view) {
+        // Declare required permissions.
+        String[] requiredPermissions = new String[] {
+                Manifest.permission.READ_CONTACTS,
+        };
+
+        // Choose contact if permission is present.
+        if (checkForPermissions(requiredPermissions, REQUEST_CODE_CHOOSE_CONTACT)) {
+            chooseFilterContact();
+        }
+    }
+
+    private void chooseFilterContact() {
+        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK,
+                ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(contactPickerIntent, REQUEST_CODE_CHOOSE_CONTACT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_CHOOSE_CONTACT:
+                    filterByContact(data);
+                    break;
+                default:
+                    Log.w("Activity Result", "Unexpected activity request code: " + requestCode);
+            }
+        } else {
+            // Gracefully handle failure.
+            Log.i("Activity Result", "Activity result not OK.");
+        }
+    }
+
+    private void filterByContact(Intent data) {
+        Uri uri = data.getData();
+        if (uri != null) {
+            Cursor cursor = null;
+            try {
+                Uri contentUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+                String id = uri.getLastPathSegment();
+                String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?";
+                String[] selectionArgs = new String[] {id};
+                cursor = getContentResolver().query(contentUri, null, selection, selectionArgs, null);
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    // Store number for filtering.
+                    String columnName = ContactsContract.CommonDataKinds.Phone.NUMBER;
+                    int columnIndex = cursor.getColumnIndex(columnName);
+                    String number = cursor.getString(columnIndex);
+                    m_filterContact = number;
+
+                    // Update label with name.
+                    columnName = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
+                    columnIndex = cursor.getColumnIndex(columnName);
+                    String name = cursor.getString(columnIndex);
+                    TextView label = findViewById(R.id.textViewContact);
+                    label.setText("Contact: " + name);
+                }
+            }
+            catch (SQLiteException | SecurityException | IllegalArgumentException e) {
+                Log.w("Exception", e.getLocalizedMessage());
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+    }
+
+    public void onAllContactsClick(View view) {
+        TextView label = findViewById(R.id.textViewContact);
+        label.setText("Contact: All");
+        m_filterContact = "";
     }
 }
