@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.telephony.PhoneNumberUtils;
@@ -20,6 +21,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -127,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         // Declare required permissions.
         String[] requiredPermissions = new String[] {
                 Manifest.permission.READ_SMS,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
         };
 
         // Export text messages if permissions have been granted.
@@ -176,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
     private void exportTextMessages() {
         List<String> textMessages = getAllSms();
         Log.i("Export", "There are " + textMessages.size() + " messages.");
+        writeExportFile(textMessages);
     }
 
     // Callback for after the user selects whether to give a required permission.
@@ -300,5 +307,60 @@ public class MainActivity extends AppCompatActivity {
         TextView label = findViewById(R.id.textViewContact);
         label.setText("Contact: All");
         m_filterContact = "";
+    }
+
+    // Write the exported file.
+    private void writeExportFile(List<String> textMessages) {
+        try {
+            // Get the directory.
+            File dir = getExportFileDir();
+
+            // Get the date.
+//            Date date = new Date();
+//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+
+            // Get the file name.
+//            String fileName = "log_" + format.format(date) + ".txt";
+            String fileName = "export.txt";
+            String filePath = dir + File.separator + fileName;
+            Log.i("File name", filePath);
+
+            // Create the file.
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // Write to the file.
+            FileWriter writer = new FileWriter(file);
+            for (String message: textMessages) {
+                writer.write(message);
+                writer.write("\n---\n");
+            }
+            writer.close();
+
+            // Update the label.
+//            TextView label = findViewById(R.id.textViewHint);
+//            label.setText(R.string.label_status_text_file_written);
+        } catch (IOException e) {
+            Log.w("Export", e.getLocalizedMessage());
+        }
+    }
+
+    private File getExportFileDir() throws IOException {
+        File documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        File exportsDir = new File(documentsDir + File.separator + "sms-exports");
+
+        if (!exportsDir.exists()) {
+            Log.i("Export", "Creating exports directory");
+            boolean result = exportsDir.mkdir();
+
+            if (result == false) {
+                Log.w("Export", "Could not create directory.");
+                exportsDir = documentsDir;
+            }
+        }
+
+        return exportsDir;
     }
 }
