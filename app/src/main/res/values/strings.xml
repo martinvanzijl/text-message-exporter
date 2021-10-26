@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Export Text Messages</string>
+    <string name="button_export_label">Export Text Messages</string>
+</resources>
