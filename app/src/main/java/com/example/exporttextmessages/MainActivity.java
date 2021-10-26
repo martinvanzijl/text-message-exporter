@@ -43,9 +43,16 @@ public class MainActivity extends AppCompatActivity {
 //                    new String[]{Telephony.Sms.Conversations.THREAD_ID, Telephony.Sms.Conversations.MESSAGE_COUNT},
 //                    null, null, Telephony.Sms.Conversations.DEFAULT_SORT_ORDER);
 
-            // Messages.
+            String[] fields = new String[] {
+                    Telephony.Sms.BODY,
+                    Telephony.Sms.TYPE,
+                    Telephony.Sms.DATE,
+                    Telephony.Sms.ADDRESS
+            };
+
+            // Get messages from the database.
             Cursor c = cr.query(Telephony.Sms.CONTENT_URI,
-                    new String[]{Telephony.Sms.BODY, Telephony.Sms.TYPE, Telephony.Sms.DATE},
+                    fields,
                     null, null, Telephony.Sms.DEFAULT_SORT_ORDER);
             int totalSMS = c.getCount();
 
@@ -56,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                     String body = c.getString(0);
                     int type = c.getInt(1);
                     long dateLong = c.getLong(2);
+                    String address = c.getString(3);
 
                     // Format date.
                     Date date = new Date(dateLong);
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     String typeName = getMessageTypeName(type);
                     String line = typeName + " at " + date + ":\n";
                     line += body;
+                    line += "\nAddress: " + address;
                     line += "\n---";
                     Log.i("Message", line);
 
