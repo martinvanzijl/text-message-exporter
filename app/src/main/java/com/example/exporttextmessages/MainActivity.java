@@ -340,8 +340,8 @@ public class MainActivity extends AppCompatActivity {
             writer.close();
 
             // Update the label.
-//            TextView label = findViewById(R.id.textViewHint);
-//            label.setText(R.string.label_status_text_file_written);
+            TextView label = findViewById(R.id.textViewHint);
+            label.setText(R.string.label_status_text_file_written);
         } catch (IOException e) {
             Log.w("Export", e.getLocalizedMessage());
         }
