@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,13 +22,16 @@ import android.provider.Telephony;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_EXPORT_MESSAGES = 1000;
     private static final int REQUEST_CODE_CHOOSE_CONTACT = 2000;
     private String m_filterContact = "";
+    private Date m_filterStartDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +67,18 @@ public class MainActivity extends AppCompatActivity {
                     Telephony.Sms.ADDRESS
             };
 
+            // Apply date filter.
+            String selection = null;
+            String[] selectionArgs = null;
+            if (m_filterStartDate != null) {
+                selection = "date >= ?";
+                selectionArgs = new String[] {String.valueOf(m_filterStartDate.getTime())};
+            }
+
             // Get messages from the database.
             Cursor c = cr.query(Telephony.Sms.CONTENT_URI,
                     fields,
-                    null, null, Telephony.Sms.DEFAULT_SORT_ORDER);
+                    selection, selectionArgs, Telephony.Sms.DEFAULT_SORT_ORDER);
             int totalSMS = c.getCount();
 
             if (c.moveToFirst()) {
@@ -78,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     // Format date.
                     Date date = new Date(dateLong);
 
-                    // Apply filter.
+                    // Apply contact filter.
                     boolean exportMessage = true;
                     if (!m_filterContact.isEmpty()) {
                         if (!PhoneNumberUtils.compare(address, m_filterContact)) {
@@ -353,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!exportsDir.exists()) {
             Log.i("Export", "Creating exports directory");
-            boolean result = exportsDir.mkdir();
+            boolean result = exportsDir.mkdirs();
 
             if (result == false) {
                 Log.w("Export", "Could not create directory.");
@@ -362,5 +377,59 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return exportsDir;
+    }
+
+    // Class for the date picker.
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            if (mMainActivity != null) {
+                mMainActivity.onStartDateSet(view, year, month, day);
+            }
+        }
+
+        MainActivity mMainActivity = null;
+
+        private void setMainActivity(MainActivity activity) {
+            mMainActivity = activity;
+        }
+    }
+
+    // Show the start date picker.
+    public void showDatePickerDialog(View view) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        newFragment.setMainActivity(this);
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    // Callback for when the start date is set.
+    public void onStartDateSet(DatePicker view, int year, int month, int day) {
+        TextView label = findViewById(R.id.textViewStartDate);
+
+        // Format date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day, 0, 0, 0);
+        Date date = calendar.getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy cx");
+        String dateStr = formatter.format(date);
+
+        // Set label.
+        label.setText("Start date: " + dateStr);
+
+        // Set filter field.
+        m_filterStartDate = date;
     }
 }
