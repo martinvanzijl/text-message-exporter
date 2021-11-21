@@ -14,7 +14,7 @@ public class Logger {
 
     // Check if logging is enabled.
     private static boolean loggingEnabled() {
-        return true;
+        return false;
     }
 
     // Write a message to the log file.

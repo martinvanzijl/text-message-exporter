@@ -417,27 +417,19 @@ public class MainActivity extends AppCompatActivity {
     // Callback for when the start date is set.
     public void onStartDateSet(DatePicker view, int year, int month, int day) {
         try {
-            appendLog("Start date set handler called.");
             TextView label = findViewById(R.id.textViewStartDate);
 
             // Format date.
-            appendLog("Formatting date.");
             Calendar calendar = Calendar.getInstance();
-            appendLog(" - Setting fields.");
             calendar.set(year, month, day, 0, 0, 0);
-            appendLog(" - Getting time.");
             Date date = calendar.getTime();
-            appendLog(" - Creating formatter.");
-            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy cx");
-            appendLog(" - Creating string.");
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy");
             String dateStr = formatter.format(date);
 
             // Set label.
-            appendLog("Setting label.");
             label.setText("Start date: " + dateStr);
 
             // Set filter field.
-            appendLog("Setting field.");
             m_filterStartDate = date;
         }
         catch (Exception e) {
