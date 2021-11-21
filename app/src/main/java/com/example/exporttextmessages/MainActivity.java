@@ -35,14 +35,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EXPORT_MESSAGES = 1000;
     private static final int REQUEST_CODE_CHOOSE_CONTACT = 2000;
     private String m_filterContact = "";
+    private String m_filterContactDisplayName = "";
     private Date m_filterStartDate = null;
+    // A cache for contact names. This does make a difference in speed.
+    private Map<String, String> mContactNames = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,9 +133,44 @@ public class MainActivity extends AppCompatActivity {
         String typeName = getMessageTypeName(type);
         String line = typeName + " at " + date + ":\n";
         line += body;
-        line += "\nAddress: " + address;
+        String contact = m_filterContact.isEmpty() ? getContactDisplayName(address) : m_filterContactDisplayName;
+        line += "\nContact: " + contact;
         line += "\n---";
         return line;
+    }
+
+    // Return contact display name for the given phone number.
+    private String getContactDisplayName(String phoneNumber) {
+        // Check if name is cached.
+        if (mContactNames.containsKey(phoneNumber)) {
+            return mContactNames.get(phoneNumber);
+        }
+
+        // Default to the phoneNumber.
+        String contactName = phoneNumber;
+
+        // Check for permissions first.
+        if (!hasPermission(Manifest.permission.READ_CONTACTS)) {
+            mContactNames.put(phoneNumber, contactName);
+            return contactName;
+        }
+
+        // Read the contact name from the database.
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+
+        String[] projection = new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME };
+
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+
+        if (cursor != null) {
+            if(cursor.moveToFirst()) {
+                contactName = cursor.getString(0);
+            }
+            cursor.close();
+        }
+
+        mContactNames.put(phoneNumber, contactName);
+        return contactName;
     }
 
     // Get name for the message type.
@@ -308,6 +348,9 @@ public class MainActivity extends AppCompatActivity {
                     String name = cursor.getString(columnIndex);
                     TextView label = findViewById(R.id.textViewContact);
                     label.setText("Contact: " + name);
+
+                    // Store for later use.
+                    m_filterContactDisplayName = name;
                 }
             }
             catch (SQLiteException | SecurityException | IllegalArgumentException e) {
@@ -324,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
         TextView label = findViewById(R.id.textViewContact);
         label.setText("Contact: All");
         m_filterContact = "";
+        m_filterContactDisplayName = "";
     }
 
     // Write the exported file.
