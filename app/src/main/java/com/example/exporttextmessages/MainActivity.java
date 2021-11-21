@@ -1,11 +1,5 @@
 package com.example.exporttextmessages;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -25,10 +19,15 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -417,19 +416,37 @@ public class MainActivity extends AppCompatActivity {
 
     // Callback for when the start date is set.
     public void onStartDateSet(DatePicker view, int year, int month, int day) {
-        TextView label = findViewById(R.id.textViewStartDate);
+        try {
+            appendLog("Start date set handler called.");
+            TextView label = findViewById(R.id.textViewStartDate);
 
-        // Format date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, 0, 0, 0);
-        Date date = calendar.getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy cx");
-        String dateStr = formatter.format(date);
+            // Format date.
+            appendLog("Formatting date.");
+            Calendar calendar = Calendar.getInstance();
+            appendLog(" - Setting fields.");
+            calendar.set(year, month, day, 0, 0, 0);
+            appendLog(" - Getting time.");
+            Date date = calendar.getTime();
+            appendLog(" - Creating formatter.");
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy cx");
+            appendLog(" - Creating string.");
+            String dateStr = formatter.format(date);
 
-        // Set label.
-        label.setText("Start date: " + dateStr);
+            // Set label.
+            appendLog("Setting label.");
+            label.setText("Start date: " + dateStr);
 
-        // Set filter field.
-        m_filterStartDate = date;
+            // Set filter field.
+            appendLog("Setting field.");
+            m_filterStartDate = date;
+        }
+        catch (Exception e) {
+            Log.w("Setting date", e.getLocalizedMessage());
+            appendLog(e.getLocalizedMessage());
+        }
+    }
+
+    void appendLog(String message) {
+        Logger.appendLog(message);
     }
 }
