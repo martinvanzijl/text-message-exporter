@@ -329,6 +329,10 @@ public class MainActivity extends AppCompatActivity {
     // Write the exported file.
     private void writeExportFile(List<String> textMessages) {
         try {
+            // Update the label.
+            TextView label = findViewById(R.id.textViewHint);
+            label.setText(R.string.label_status_busy_exporting);
+
             // Get the directory.
             File dir = getExportFileDir();
 
@@ -357,7 +361,6 @@ public class MainActivity extends AppCompatActivity {
             writer.close();
 
             // Update the label.
-            TextView label = findViewById(R.id.textViewHint);
             label.setText(R.string.label_status_text_file_written);
         } catch (IOException e) {
             Log.w("Export", e.getLocalizedMessage());

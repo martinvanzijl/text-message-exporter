@@ -10,4 +10,5 @@
     <string name="label_start_date">Start date:</string>
     <string name="button_start_date_label">Choose start date</string>
     <string name="action_help">Help</string>
+    <string name="label_status_busy_exporting">Exporting...</string>
 </resources>
