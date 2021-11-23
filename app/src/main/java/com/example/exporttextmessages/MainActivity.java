@@ -350,8 +350,7 @@ public class MainActivity extends AppCompatActivity {
                     // Store number for filtering.
                     String columnName = ContactsContract.CommonDataKinds.Phone.NUMBER;
                     int columnIndex = cursor.getColumnIndex(columnName);
-                    String number = cursor.getString(columnIndex);
-                    m_filterContact = number;
+                    m_filterContact = cursor.getString(columnIndex);
 
                     // Update label with name.
                     columnName = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
