@@ -403,6 +403,7 @@ public class MainActivity extends AppCompatActivity {
             // Create the file.
             File file = new File(filePath);
             if (!file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
             }
 
