@@ -6,7 +6,7 @@
     <string name="button_choose_contact_label">Choose Contact</string>
     <string name="all_contacts_label">All Contacts</string>
     <string name="hint_label">Click the button below to export messages to a file.</string>
-    <string name="label_status_text_file_written">Messages exported to file.</string>
+    <string name="label_status_text_file_written">Messages exported. <u>Click to view file.</u></string>
     <string name="label_start_date">Start date:</string>
     <string name="button_start_date_label">Choose start date</string>
     <string name="action_help">Help</string>

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -11,7 +12,9 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.ContactsContract;
+import android.provider.DocumentsContract;
 import android.provider.Telephony;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
@@ -21,11 +24,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
@@ -55,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Allow opening export folder.
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
 //    @SuppressLint("NewApi")
@@ -574,5 +583,107 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onTextViewHintClick(View view) {
+//        openExportFolder();
+        viewExportedFile();
+    }
+
+    /**
+     * View the latest exported file.
+     */
+    private void viewExportedFile() {
+        try {
+            // Get file path.
+            File dir = getExportFileDir();
+            String fileName = "export.txt";
+            String path = dir + File.separator + fileName;
+
+            // Check that file exists.
+            File file = new File(path);
+            if (!file.exists()) {
+                showToastMessage("Export file does not exist.");
+                return;
+            }
+
+            // Use file provider URI.
+            Uri uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+
+            // Launch activity to view file.
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "text/plain");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.w("Open Folder", e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Show a "toast" message.
+     * @param message The message.
+     */
+    protected void showToastMessage(String message) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
+    }
+
+    /**
+     * Open the folder containing the export files.
+     */
+    private void openExportFolder() {
+        try {
+            openFolder(getExportFileDir());
+        } catch (IOException e) {
+            Log.w("Open Export Folder", e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Open a specific folder in File Explorer.
+     * @param location The folder to open.
+     */
+    private void openFolder(File location) {
+        // From: https://stackoverflow.com/questions/41611757/how-to-simply-open-directory-folder
+        try {
+            // Get file path.
+            String path = location.getAbsolutePath(); // Does not open correct folder.
+//            String path = location.getPath(); // Does not work.
+
+            // Create intent.
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+
+            // Set location.
+            Uri dir = Uri.parse("file://" + path); // Does not open correct folder.
+//            Uri dir = Uri.parse(path); // Does not work.
+//            Uri dir = Uri.parse(path + File.separator); // Does not work.
+//            Uri dir = Uri.parse("content://" + path); // Does not work. Expects file contents.
+
+            // Use a file provider. Does not work.
+//            Uri dir = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", location);
+
+            // Set URI and target file type.
+            intent.setDataAndType(dir, "*/*");
+//            intent.setDataAndType(dir, "vnd.android.document/directory"); // Does not work.
+
+            // Allow intent to access the folder.
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // From reading source code of Files app. Does not work.
+//            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, dir);
+
+            // Show the file browser.
+            startActivity(intent);
+
+            // Does not work. Still enters wrong folder.
+//            startActivity(Intent.createChooser(intent, "Navigate"));
+        }
+        catch (Exception e) {
+            Log.w("Open Folder", e.getLocalizedMessage());
+        }
     }
 }
