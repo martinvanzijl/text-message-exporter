@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Return true if the app has the given permission.
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean hasPermission(String permission) {
         return ContextCompat.checkSelfPermission(
                 getApplicationContext(), permission) ==
