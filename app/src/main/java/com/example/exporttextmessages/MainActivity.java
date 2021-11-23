@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -493,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             calendar.set(year, month, day, 23, 59, 59);
             Date date = calendar.getTime();
-            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy");
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.US);
             String dateStr = formatter.format(date);
 
             // Set label.
@@ -533,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
             Calendar calendar = Calendar.getInstance();
             calendar.set(year, month, day, 0, 0, 0);
             Date date = calendar.getTime();
-            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy");
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.US);
             String dateStr = formatter.format(date);
 
             // Set label.
