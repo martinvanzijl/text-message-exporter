@@ -447,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
             CHOOSE_END_DATE
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
