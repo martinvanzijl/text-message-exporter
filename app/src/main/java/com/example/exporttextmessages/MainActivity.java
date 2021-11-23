@@ -324,12 +324,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_CODE_CHOOSE_CONTACT:
-                    filterByContact(data);
-                    break;
-                default:
-                    Log.w("Activity Result", "Unexpected activity request code: " + requestCode);
+            if (requestCode == REQUEST_CODE_CHOOSE_CONTACT) {
+                filterByContact(data);
+            } else {
+                Log.w("Activity Result", "Unexpected activity request code: " + requestCode);
             }
         } else {
             // Gracefully handle failure.
