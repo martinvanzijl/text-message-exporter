@@ -429,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("Export", "Creating exports directory");
             boolean result = exportsDir.mkdirs();
 
-            if (result == false) {
+            if (!result) {
                 Log.w("Export", "Could not create directory.");
                 exportsDir = documentsDir;
             }
