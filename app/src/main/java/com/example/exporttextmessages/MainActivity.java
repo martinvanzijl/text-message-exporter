@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                     columnIndex = cursor.getColumnIndex(columnName);
                     String name = cursor.getString(columnIndex);
                     TextView label = findViewById(R.id.textViewContact);
-                    label.setText("Contact: " + name);
+                    label.setText(getString(R.string.filter_contact_set, name));
 
                     // Store for later use.
                     m_filterContactDisplayName = name;
@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAllContactsClick(View view) {
         TextView label = findViewById(R.id.textViewContact);
-        label.setText("Contact: All");
+        label.setText(R.string.contact_label);
         m_filterContact = "";
         m_filterContactDisplayName = "";
     }
@@ -496,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
             String dateStr = formatter.format(date);
 
             // Set label.
-            label.setText("End date: " + dateStr);
+            label.setText(getString(R.string.end_date_set, dateStr));
 
             // Set filter field.
             m_filterEndDate = date;
@@ -536,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
             String dateStr = formatter.format(date);
 
             // Set label.
-            label.setText("Start date: " + dateStr);
+            label.setText(getString(R.string.start_date_set, dateStr));
 
             // Set filter field.
             m_filterStartDate = date;

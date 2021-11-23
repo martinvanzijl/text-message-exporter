@@ -13,4 +13,7 @@
     <string name="label_status_busy_exporting">Exporting...</string>
     <string name="label_end_date">End date:</string>
     <string name="button_end_date_label">Choose end date</string>
+    <string name="filter_contact_set">Contact: %1$s</string>
+    <string name="end_date_set">End date: %1$s</string>
+    <string name="start_date_set">Start date: %1$s</string>
 </resources>
