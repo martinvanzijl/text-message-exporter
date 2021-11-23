@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private String m_filterContact = "";
     private String m_filterContactDisplayName = "";
     private Date m_filterStartDate = null;
+    private Date m_filterEndDate = null;
     // A cache for contact names. This does make a difference in speed.
     private Map<String, String> mContactNames = new HashMap<>();
 
@@ -75,12 +76,22 @@ public class MainActivity extends AppCompatActivity {
             };
 
             // Apply date filter.
-            String selection = null;
-            String[] selectionArgs = null;
+            QueryMaker queryMaker = new QueryMaker();
+//            String selection = null;
+//            String[] selectionArgs = null;
             if (m_filterStartDate != null) {
-                selection = "date >= ?";
-                selectionArgs = new String[] {String.valueOf(m_filterStartDate.getTime())};
+//                selection = "date >= ?";
+//                selectionArgs = new String[] {String.valueOf(m_filterStartDate.getTime())};
+                queryMaker.addQuery("date >= ?", String.valueOf(m_filterStartDate.getTime()));
             }
+            if (m_filterEndDate != null) {
+//                selection = "date <= ?";
+//                selectionArgs = new String[] {String.valueOf(m_filterEndDate.getTime())};
+                queryMaker.addQuery("date <= ?", String.valueOf(m_filterEndDate.getTime()));
+            }
+
+            String selection = queryMaker.getSelection();
+            String[] selectionArgs = queryMaker.getSelectionArgs();
 
             // Get messages from the database.
             Cursor c = cr.query(Telephony.Sms.CONTENT_URI,
@@ -432,6 +443,11 @@ public class MainActivity extends AppCompatActivity {
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
+        public enum Purpose {
+            CHOOSE_START_DATE,
+            CHOOSE_END_DATE
+        }
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
@@ -446,7 +462,12 @@ public class MainActivity extends AppCompatActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             if (mMainActivity != null) {
-                mMainActivity.onStartDateSet(view, year, month, day);
+                if (mPurpose == Purpose.CHOOSE_START_DATE) {
+                    mMainActivity.onStartDateSet(view, year, month, day);
+                }
+                else {
+                    mMainActivity.onEndDateSet(view, year, month, day);
+                }
             }
         }
 
@@ -455,12 +476,51 @@ public class MainActivity extends AppCompatActivity {
         private void setMainActivity(MainActivity activity) {
             mMainActivity = activity;
         }
+
+        private Purpose mPurpose = Purpose.CHOOSE_START_DATE;
+
+        public void setPurpose(Purpose purpose) {
+            mPurpose = purpose;
+        }
+    }
+
+    // Callback for when the end date is set.
+    private void onEndDateSet(DatePicker view, int year, int month, int day) {
+        try {
+            TextView label = findViewById(R.id.textViewEndDate);
+
+            // Format date.
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, day, 23, 59, 59);
+            Date date = calendar.getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy");
+            String dateStr = formatter.format(date);
+
+            // Set label.
+            label.setText("End date: " + dateStr);
+
+            // Set filter field.
+            m_filterEndDate = date;
+        }
+        catch (Exception e) {
+            Log.w("Setting date", e.getLocalizedMessage());
+            appendLog(e.getLocalizedMessage());
+        }
     }
 
     // Show the start date picker.
     public void showDatePickerDialog(View view) {
         DatePickerFragment newFragment = new DatePickerFragment();
         newFragment.setMainActivity(this);
+        if (view.getId() == R.id.buttonStartDate) {
+            newFragment.setPurpose(DatePickerFragment.Purpose.CHOOSE_START_DATE);
+        }
+        else if (view.getId() == R.id.buttonEndDate) {
+            newFragment.setPurpose(DatePickerFragment.Purpose.CHOOSE_END_DATE);
+        }
+        else {
+            Log.w("Choose Date", "Unknown button.");
+        }
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
