@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
@@ -14,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.ContactsContract;
-import android.provider.DocumentsContract;
 import android.provider.Telephony;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
@@ -32,8 +32,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,6 +49,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 //    @SuppressLint("NewApi")
-    public List<String> getAllSms() {
-        List<String> lstSms = new ArrayList<>();
+    public List<MessageDetails> getAllSms() {
+        List<MessageDetails> lstSms = new ArrayList<>();
 
         try {
             ContentResolver cr = getContentResolver();
@@ -131,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
 
                     // Add to list.
                     if (exportMessage) {
-                        String text = formatMessage(body, type, address, date);
-                        lstSms.add(text);
+//                        String text = formatMessage(body, type, address, date);
+//                        lstSms.add(text);
+                        MessageDetails details = new MessageDetails(body, type, address, date);
+                        lstSms.add(details);
                     }
 
                     // Go to next record.
@@ -148,6 +164,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return lstSms;
+    }
+
+    /**
+     * Format the message as a string.
+     *
+     * @param m The message.
+     * @return The string representation.
+     */
+    private String formatMessage(MessageDetails m) {
+        return formatMessage(m.getBody(), m.getType(), m.getAddress(), m.getDate());
     }
 
     private String formatMessage(String body, int type, String address, Date date) {
@@ -259,9 +285,83 @@ public class MainActivity extends AppCompatActivity {
 
     // Export SMS messages.
     private void exportTextMessages() {
-        List<String> textMessages = getAllSms();
+        List<MessageDetails> textMessages = getAllSms();
         Log.i("Export", "There are " + textMessages.size() + " messages.");
         writeExportFile(textMessages);
+
+        if (exportXmlFileEnabled()) {
+            writeExportFileXml(textMessages);
+        }
+    }
+
+    /**
+     * Check if export to XML is enabled.
+     * @return Whether exporting to XML is enabled.
+     */
+    private boolean exportXmlFileEnabled() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean("export_xml", false);
+    }
+
+    /**
+     * Export messages to an XML file.
+     * @param textMessages The messages.
+     */
+    private void writeExportFileXml(List<MessageDetails> textMessages) {
+        try {
+            // Update the label.
+            TextView label = findViewById(R.id.textViewHint);
+            label.setText(R.string.label_status_busy_exporting);
+
+            // Get the directory.
+            File dir = getExportFileDir();
+
+            // Get the file name.
+            String fileName = "export.xml";
+            String filePath = dir + File.separator + fileName;
+
+            // Create factory.
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+            // Create builder.
+            DocumentBuilder db = factory.newDocumentBuilder();
+
+            // Create document.
+            Document doc = db.newDocument();
+
+            // Create the root element.
+            Element rootElement = doc.createElement("text_messages");
+
+            // Create message element.
+            for (MessageDetails message: textMessages) {
+                message.addToXml(doc, rootElement);
+            }
+
+            // Add the root element.
+            doc.appendChild(rootElement);
+
+            try {
+                // Set XML format.
+                Transformer tr = TransformerFactory.newInstance().newTransformer();
+                tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+                // Send output to file.
+                tr.transform(new DOMSource(doc),
+                        new StreamResult(new FileOutputStream(filePath)));
+
+            } catch (TransformerException | IOException e) {
+                Log.w("XML", e.getLocalizedMessage());
+            }
+
+            // Update the label.
+            label.setText(R.string.label_status_text_file_written);
+        } catch (Exception e) {
+            Log.w("Export", e.getLocalizedMessage());
+        }
     }
 
     // Callback for after the user selects whether to give a required permission.
@@ -390,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Write the exported file.
-    private void writeExportFile(List<String> textMessages) {
+    private void writeExportFile(List<MessageDetails> textMessages) {
         try {
             // Update the label.
             TextView label = findViewById(R.id.textViewHint);
@@ -418,8 +518,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Write to the file.
             FileWriter writer = new FileWriter(file);
-            for (String message: textMessages) {
-                writer.write(message);
+            for (MessageDetails message: textMessages) {
+                String line = formatMessage(message);
+                writer.write(line);
                 writer.write("\n");
             }
             writer.close();
@@ -578,6 +679,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_help) {
             Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
