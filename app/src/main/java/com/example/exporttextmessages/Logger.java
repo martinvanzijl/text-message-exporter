@@ -35,6 +35,7 @@ public class Logger {
 
             // Create log file if it does not exist.
             if (!logFile.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 logFile.createNewFile();
             }
 

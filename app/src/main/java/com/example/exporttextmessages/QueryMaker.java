@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryMaker {
+    @SuppressWarnings("CanBeFinal")
     private List<String> mSelections = new ArrayList<>();
+    @SuppressWarnings("CanBeFinal")
     private List<String> mArgs = new ArrayList<>();
 
     private void addSelection(String selection) {

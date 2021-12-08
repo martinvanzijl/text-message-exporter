@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private Date m_filterStartDate = null;
     private Date m_filterEndDate = null;
     // A cache for contact names. This does make a difference in speed.
+    @SuppressWarnings("CanBeFinal")
     private Map<String, String> mContactNames = new HashMap<>();
 
     @Override
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         return typeName;
     }
 
-    public void onButtonExportClick(View view) {
+    public void onButtonExportClick(@SuppressWarnings("unused") View view) {
         // Declare required permissions.
         String[] requiredPermissions = new String[] {
                 Manifest.permission.READ_SMS,
@@ -410,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onChooseContactClick(View view) {
+    public void onChooseContactClick(@SuppressWarnings("unused") View view) {
         // Declare required permissions.
         String[] requiredPermissions = new String[] {
                 Manifest.permission.READ_CONTACTS,
@@ -482,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onAllContactsClick(View view) {
+    public void onAllContactsClick(@SuppressWarnings("unused") View view) {
         TextView label = findViewById(R.id.textViewContact);
         label.setText(R.string.contact_label);
         m_filterContact = "";
@@ -596,7 +597,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Callback for when the end date is set.
-    private void onEndDateSet(DatePicker view, int year, int month, int day) {
+    private void onEndDateSet(@SuppressWarnings("unused") DatePicker view, int year, int month, int day) {
         try {
             TextView label = findViewById(R.id.textViewEndDate);
 
@@ -636,7 +637,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Callback for when the start date is set.
-    public void onStartDateSet(DatePicker view, int year, int month, int day) {
+    public void onStartDateSet(@SuppressWarnings("unused") DatePicker view, int year, int month, int day) {
         try {
             TextView label = findViewById(R.id.textViewStartDate);
 
@@ -691,7 +692,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onTextViewHintClick(View view) {
+    public void onTextViewHintClick(@SuppressWarnings("unused") View view) {
 //        openExportFolder();
         viewExportedFile();
     }

@@ -9,9 +9,13 @@ import java.util.Date;
  * Represents details of a text message.
  */
 public class MessageDetails {
+    @SuppressWarnings("CanBeFinal")
     private String mBody;
+    @SuppressWarnings("CanBeFinal")
     private int mType;
+    @SuppressWarnings("CanBeFinal")
     private String mAddress;
+    @SuppressWarnings("CanBeFinal")
     private Date mDate;
 
     public MessageDetails(String body, int type, String address, Date date) {
