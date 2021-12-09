@@ -48,7 +48,7 @@
             android:id="@+id/textViewFilters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             android:gravity="center_horizontal"
             android:text="@string/filters_label"
             android:textSize="16sp"
@@ -61,21 +61,30 @@
             android:layout_marginBottom="8dp"
             android:text="@string/contact_label" />
 
-        <Button
-            android:id="@+id/buttonChooseContact"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:onClick="onChooseContactClick"
-            android:text="@string/button_choose_contact_label" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/buttonAllContacts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:onClick="onAllContactsClick"
-            android:text="@string/all_contacts_label" />
+            <Button
+                android:id="@+id/buttonChooseContact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:onClick="onChooseContactClick"
+                android:text="@string/button_choose_contact_label" />
+
+            <Button
+                android:id="@+id/buttonAllContacts"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:onClick="onAllContactsClick"
+                android:text="@string/all_contacts_label" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textViewStartDate"
