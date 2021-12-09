@@ -3,6 +3,7 @@ package com.example.exporttextmessages;
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -836,6 +837,10 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException e) {
             Log.w("Email", e.getLocalizedMessage());
             showToastMessage("Problem sending email.");
+        }
+        catch (ActivityNotFoundException e) {
+            Log.w("Email", e.getLocalizedMessage());
+            showToastMessage("Could not find app to send email.");
         }
     }
 }
