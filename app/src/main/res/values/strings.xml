@@ -20,4 +20,5 @@
     <string name="settings_export_header">Export Options</string>
     <string name="export_xml_label">Export XML file (as well as text)</string>
     <string name="action_settings">Settings</string>
+    <string name="button_email_label">Email Exported File</string>
 </resources>

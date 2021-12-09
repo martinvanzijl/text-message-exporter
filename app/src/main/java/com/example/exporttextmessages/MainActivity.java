@@ -497,18 +497,8 @@ public class MainActivity extends AppCompatActivity {
             TextView label = findViewById(R.id.textViewHint);
             label.setText(R.string.label_status_busy_exporting);
 
-            // Get the directory.
-            File dir = getExportFileDir();
-
-            // Get the date.
-//            Date date = new Date();
-//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-
-            // Get the file name.
-//            String fileName = "log_" + format.format(date) + ".txt";
-            String fileName = "export.txt";
-            String filePath = dir + File.separator + fileName;
-            Log.i("File name", filePath);
+            // Get the path.
+            String filePath = getExportedTextFilePath();
 
             // Create the file.
             File file = new File(filePath);
@@ -703,9 +693,7 @@ public class MainActivity extends AppCompatActivity {
     private void viewExportedFile() {
         try {
             // Get file path.
-            File dir = getExportFileDir();
-            String fileName = "export.txt";
-            String path = dir + File.separator + fileName;
+            String path = getExportedTextFilePath();
 
             // Check that file exists.
             File file = new File(path);
@@ -791,6 +779,60 @@ public class MainActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             Log.w("Open Folder", e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Get the path the text file must be exported to.
+     * @return The file the text file is exported to.
+     */
+    private String getExportedTextFilePath() throws IOException {
+
+        File dir = getExportFileDir();
+        String fileName = "export.txt";
+
+        return dir + File.separator + fileName;
+    }
+
+    public void onButtonEmailClick(View view) {
+        // Print message.
+        Log.i("Email", "Email button clicked.");
+
+        try {
+            // Get the file to attach.
+            String path = getExportedTextFilePath();
+
+            // Check that file exists.
+            File file = new File(path);
+            if (!file.exists()) {
+                showToastMessage("Export file does not exist.");
+                return;
+            }
+
+            // Use file provider URI.
+            Uri attachmentURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+
+            // Get the address.
+            String recipient = "martin.vanzijl@gmail.com";
+
+            // Create the intent.
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+            // The intent does not have a URI, so declare the "text/plain" MIME type
+//        emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{recipient}); // recipients
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Text Message Export");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Here are text messages exported from my phone.");
+            emailIntent.putExtra(Intent.EXTRA_STREAM, attachmentURI);
+            // You can also attach multiple items by passing an ArrayList of Uris
+
+            // Start the email activity.
+            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        }
+        catch (IOException e) {
+            Log.w("Email", e.getLocalizedMessage());
+            showToastMessage("Problem sending email.");
         }
     }
 }
