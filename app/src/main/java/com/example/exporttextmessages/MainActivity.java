@@ -813,7 +813,9 @@ public class MainActivity extends AppCompatActivity {
             Uri attachmentURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
 
             // Get the address.
-            String recipient = "martin.vanzijl@gmail.com";
+//            String recipient = "martin.vanzijl@gmail.com";
+//            String[] recipients = new String[] { recipient };
+            String[] recipients = null;
 
             // Create the intent.
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -821,14 +823,15 @@ public class MainActivity extends AppCompatActivity {
             // The intent does not have a URI, so declare the "text/plain" MIME type
 //        emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
             emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{recipient}); // recipients
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients); // recipients
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Text Message Export");
             emailIntent.putExtra(Intent.EXTRA_TEXT, "Here are text messages exported from my phone.");
             emailIntent.putExtra(Intent.EXTRA_STREAM, attachmentURI);
             // You can also attach multiple items by passing an ArrayList of Uris
 
             // Start the email activity.
-            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+//            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+            startActivity(emailIntent);
         }
         catch (IOException e) {
             Log.w("Email", e.getLocalizedMessage());
