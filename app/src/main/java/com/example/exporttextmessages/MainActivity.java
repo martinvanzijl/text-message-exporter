@@ -550,6 +550,15 @@ public class MainActivity extends AppCompatActivity {
         m_filterStartDate = null;
     }
 
+    public void onResetEndDateClick(View view) {
+        // Reset label.
+        TextView label = findViewById(R.id.textViewEndDate);
+        label.setText(R.string.label_end_date);
+
+        // Reset filter field.
+        m_filterEndDate = null;
+    }
+
     // Class for the date picker.
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
