@@ -541,6 +541,15 @@ public class MainActivity extends AppCompatActivity {
         return exportsDir;
     }
 
+    public void onResetStartDateClick(View view) {
+        // Reset label.
+        TextView label = findViewById(R.id.textViewStartDate);
+        label.setText(R.string.label_start_date);
+
+        // Reset filter field.
+        m_filterStartDate = null;
+    }
+
     // Class for the date picker.
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
