@@ -10,7 +10,6 @@
         android:id="@+id/buttonExport"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
-        android:onClick="onButtonExportClick"
         android:text="@string/button_export_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +24,6 @@
         android:layout_marginEnd="8dp"
         android:gravity="center"
         android:minHeight="48dp"
-        android:onClick="onTextViewHintClick"
         android:text="@string/hint_label"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +71,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="2"
-                android:onClick="onChooseContactClick"
                 android:text="@string/button_choose_contact_label" />
 
             <Button
@@ -82,7 +79,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:onClick="onAllContactsClick"
                 android:text="@string/all_contacts_label" />
         </LinearLayout>
 
@@ -105,7 +101,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="2"
-                android:onClick="showDatePickerDialog"
                 android:text="@string/button_start_date_label" />
 
             <Button
@@ -113,7 +108,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onResetStartDateClick"
                 android:text="@string/button_reset_start_date_label" />
 
         </LinearLayout>
@@ -137,7 +131,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="2"
-                android:onClick="showDatePickerDialog"
                 android:text="@string/button_end_date_label" />
 
             <Button
@@ -145,7 +138,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onResetEndDateClick"
                 android:text="@string/button_reset_end_date_label" />
 
         </LinearLayout>
@@ -157,7 +149,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:onClick="onButtonEmailClick"
         android:text="@string/button_email_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

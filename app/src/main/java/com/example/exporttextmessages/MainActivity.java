@@ -80,6 +80,17 @@ public class MainActivity extends AppCompatActivity {
         // Allow opening export folder.
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+
+        // Set click handlers.
+        findViewById(R.id.textViewHint).setOnClickListener(this::onTextViewHintClick);
+        findViewById(R.id.buttonExport).setOnClickListener(this::onButtonExportClick);
+        findViewById(R.id.buttonEmail).setOnClickListener(this::onButtonEmailClick);
+        findViewById(R.id.buttonChooseContact).setOnClickListener(this::onChooseContactClick);
+        findViewById(R.id.buttonAllContacts).setOnClickListener(this::onAllContactsClick);
+        findViewById(R.id.buttonStartDate).setOnClickListener(this::showDatePickerDialog);
+        findViewById(R.id.buttonResetStartDate).setOnClickListener(this::onResetStartDateClick);
+        findViewById(R.id.buttonEndDate).setOnClickListener(this::showDatePickerDialog);
+        findViewById(R.id.buttonResetEndDate).setOnClickListener(this::onResetEndDateClick);
     }
 
 //    @SuppressLint("NewApi")
