@@ -27,6 +27,8 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     // A cache for contact names. This does make a difference in speed.
     @SuppressWarnings("CanBeFinal")
     private Map<String, String> mContactNames = new HashMap<>();
+    private ActivityResultLauncher<Intent> chooseContactActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.buttonResetStartDate).setOnClickListener(this::onResetStartDateClick);
         findViewById(R.id.buttonEndDate).setOnClickListener(this::showDatePickerDialog);
         findViewById(R.id.buttonResetEndDate).setOnClickListener(this::onResetEndDateClick);
+
+        // Create result handler.
+        chooseContactActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
+                        Intent data = result.getData();
+                        assert data != null;
+                        filterByContact(data);
+                    }
+                }
+        );
     }
 
 //    @SuppressLint("NewApi")
@@ -438,7 +453,10 @@ public class MainActivity extends AppCompatActivity {
     private void chooseFilterContact() {
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(contactPickerIntent, REQUEST_CODE_CHOOSE_CONTACT);
+//        startActivityForResult(contactPickerIntent, REQUEST_CODE_CHOOSE_CONTACT);
+
+        // Start activity.
+        chooseContactActivity.launch(contactPickerIntent);
     }
 
     @Override
