@@ -49,9 +49,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -348,11 +350,7 @@ public class MainActivity extends AppCompatActivity {
             label.setText(R.string.label_status_busy_exporting);
 
             // Get the directory.
-            File dir = getExportFileDir();
-
-            // Get the file name.
-            String fileName = "export.xml";
-            String filePath = dir + File.separator + fileName;
+            String filePath = getExportedXmlFilePath();
 
             // Create factory.
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -865,23 +863,58 @@ public class MainActivity extends AppCompatActivity {
         return dir + File.separator + fileName;
     }
 
+    /**
+     * Get the path the XML file must be exported to.
+     * @return The file the XML file is exported to.
+     */
+    private String getExportedXmlFilePath() throws IOException {
+
+        File dir = getExportFileDir();
+        String fileName = "export.xml";
+
+        return dir + File.separator + fileName;
+    }
+
     public void onButtonEmailClick(View view) {
         // Print message.
         Log.i("Email", "Email button clicked.");
 
-        try {
-            // Get the file to attach.
-            String path = getExportedTextFilePath();
+        // Check which files to attach.
+        boolean attachTextFile = attachTextFileToEmailEnabled();
+        boolean attachXmlFile = attachXmlFileToEmailEnabled();
 
-            // Check that file exists.
-            File file = new File(path);
-            if (!file.exists()) {
-                showToastMessage("Export file does not exist.");
-                return;
+        try {
+            // Use file provider URI.
+            ArrayList<Uri> attachmentUris = new ArrayList<>();
+            String authority = getApplicationContext().getPackageName() + ".provider";
+
+            // Attach text file if setting enabled.
+            if (attachTextFile) {
+                String path = getExportedTextFilePath();
+
+                File file = new File(path);
+                if (file.exists()) {
+                    Uri attachmentURI = FileProvider.getUriForFile(this, authority, file);
+                    attachmentUris.add(attachmentURI);
+                }
+                else {
+                    Log.w("Text Message Exporter", "Text file does not exist.");
+                }
             }
 
-            // Use file provider URI.
-            Uri attachmentURI = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+            // Attach XML file if setting enabled.
+            if (attachXmlFile) {
+                String xmlFilePath = getExportedXmlFilePath();
+
+                File xmlFile = new File(xmlFilePath);
+                if (xmlFile.exists()) {
+                    Uri xmlAttachmentURI = FileProvider.getUriForFile(this, authority, xmlFile);
+                    attachmentUris.add(xmlAttachmentURI);
+                }
+                else {
+                    Log.w("Text Message Exporter", "XML file does not exist.");
+                }
+            }
 
             // Get the address.
 //            String recipient = "martin.vanzijl@gmail.com";
@@ -889,19 +922,39 @@ public class MainActivity extends AppCompatActivity {
             String[] recipients = null;
 
             // Create the intent.
-            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            boolean multipleAttachments = attachmentUris.size() > 1;
+            String action = multipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND;
+            Intent emailIntent = new Intent(action);
+
+            // Create the message bodies (in case of multiple attachments).
+            ArrayList<String> texts = new ArrayList<>();
+            for (int i = 0; i < attachmentUris.size(); ++i) {
+                texts.add("Here are text messages exported from my phone.");
+            }
+
+            // Check that there is something to attach.
+            if (attachmentUris.isEmpty()) {
+                showToastMessage("No files to attach.");
+                return;
+            }
 
             // The intent does not have a URI, so declare the "text/plain" MIME type
-//        emailIntent.setType(HTTP.PLAIN_TEXT_TYPE);
             emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients); // recipients
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients);
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Text Message Export");
-            emailIntent.putExtra(Intent.EXTRA_TEXT, "Here are text messages exported from my phone.");
-            emailIntent.putExtra(Intent.EXTRA_STREAM, attachmentURI);
-            // You can also attach multiple items by passing an ArrayList of Uris
+
+            if (multipleAttachments) {
+                // Multiple attachments.
+                emailIntent.putStringArrayListExtra(Intent.EXTRA_TEXT, texts);
+                emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
+            }
+            else {
+                // Single attachment.
+                emailIntent.putExtra(Intent.EXTRA_TEXT, texts.get(0));
+                emailIntent.putExtra(Intent.EXTRA_STREAM, attachmentUris.get(0));
+            }
 
             // Start the email activity.
-//            startActivity(Intent.createChooser(emailIntent, "Send email..."));
             startActivity(emailIntent);
         }
         catch (IOException e) {
@@ -912,5 +965,47 @@ public class MainActivity extends AppCompatActivity {
             Log.w("Email", e.getLocalizedMessage());
             showToastMessage("Could not find app to send email.");
         }
+    }
+
+    /**
+     * Check if text file should be attached to the email.
+     * @return Whether the text file should be attached to the email.
+     */
+    private boolean attachTextFileToEmailEnabled() {
+        // Get the preference.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        String key = "email_attachments";
+
+        // Read preference if it exists.
+        if (sharedPreferences.contains(key)) {
+            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+            return attachments.contains(getString(R.string.text_file));
+        }
+
+        // Otherwise, attach by default.
+        return true;
+    }
+
+    /**
+     * Check if XML file should be attached to the email.
+     * @return Whether the XML file should be attached to the email.
+     */
+    private boolean attachXmlFileToEmailEnabled() {
+        // Get the preference.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        String key = "email_attachments";
+
+        // Read preference if it exists.
+        if (sharedPreferences.contains(key)) {
+            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+            return attachments.contains(getString(R.string.xml_file));
+        }
+
+        // Otherwise, attach by default.
+        return true;
     }
 }

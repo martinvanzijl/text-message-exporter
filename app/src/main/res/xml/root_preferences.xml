@@ -8,5 +8,14 @@
             android:title="@string/export_xml_label" />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="Email Options">
+
+    </PreferenceCategory>
+    <MultiSelectListPreference
+        android:defaultValue="@array/email_files_to_attach"
+        android:entries="@array/email_files_to_attach"
+        android:entryValues="@array/email_files_to_attach"
+        android:key="email_attachments"
+        android:title="Choose files to attach" />
 
 </PreferenceScreen>
