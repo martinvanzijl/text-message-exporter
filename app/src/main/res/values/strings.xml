@@ -23,4 +23,5 @@
     <string name="button_email_label">Email Exported File</string>
     <string name="button_reset_start_date_label">Reset</string>
     <string name="button_reset_end_date_label">Reset</string>
+    <string name="reset_contact_label">Reset</string>
 </resources>

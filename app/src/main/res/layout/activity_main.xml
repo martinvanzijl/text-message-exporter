@@ -46,18 +46,36 @@
             android:id="@+id/textViewFilters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:gravity="center_horizontal"
             android:text="@string/filters_label"
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textViewContact"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/contact_label" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewContact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/contact_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonAllContacts" />
+
+            <Button
+                android:id="@+id/buttonAllContacts"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/reset_contact_label"
+                app:icon="@android:drawable/ic_input_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,26 +86,36 @@
                 android:id="@+id/buttonChooseContact"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_weight="2"
                 android:text="@string/button_choose_contact_label" />
 
-            <Button
-                android:id="@+id/buttonAllContacts"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                android:text="@string/all_contacts_label" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textViewStartDate"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/label_start_date" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_start_date"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetStartDate"/>
+
+            <Button
+                android:id="@+id/buttonResetStartDate"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/button_reset_start_date_label"
+                app:icon="@android:drawable/ic_input_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,26 +126,34 @@
                 android:id="@+id/buttonStartDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_weight="2"
                 android:text="@string/button_start_date_label" />
 
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_end_date"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetEndDate"/>
+
             <Button
-                android:id="@+id/buttonResetStartDate"
+                android:id="@+id/buttonResetEndDate"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/button_reset_start_date_label" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textViewEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/label_end_date" />
+                android:hint="@string/button_reset_end_date_label"
+                app:icon="@android:drawable/ic_input_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -132,13 +168,6 @@
                 android:layout_marginBottom="8dp"
                 android:layout_weight="2"
                 android:text="@string/button_end_date_label" />
-
-            <Button
-                android:id="@+id/buttonResetEndDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/button_reset_end_date_label" />
 
         </LinearLayout>
 

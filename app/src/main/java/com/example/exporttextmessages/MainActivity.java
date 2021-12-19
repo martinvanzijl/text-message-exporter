@@ -106,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        // Hide "reset" buttons.
+        findViewById(R.id.buttonAllContacts).setVisibility(View.INVISIBLE);
+        findViewById(R.id.buttonResetStartDate).setVisibility(View.INVISIBLE);
+        findViewById(R.id.buttonResetEndDate).setVisibility(View.INVISIBLE);
     }
 
 //    @SuppressLint("NewApi")
@@ -501,6 +506,9 @@ public class MainActivity extends AppCompatActivity {
 
                     // Store for later use.
                     m_filterContactDisplayName = name;
+
+                    // Show "reset" button.
+                    findViewById(R.id.buttonAllContacts).setVisibility(View.VISIBLE);
                 }
             }
             catch (SQLiteException | SecurityException | IllegalArgumentException e) {
@@ -518,6 +526,9 @@ public class MainActivity extends AppCompatActivity {
         label.setText(R.string.contact_label);
         m_filterContact = "";
         m_filterContactDisplayName = "";
+
+        // Hide "reset" button.
+        findViewById(R.id.buttonAllContacts).setVisibility(View.INVISIBLE);
     }
 
     // Write the exported file.
@@ -577,6 +588,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset filter field.
         m_filterStartDate = null;
+
+        // Hide "reset" button.
+        findViewById(R.id.buttonResetStartDate).setVisibility(View.INVISIBLE);
     }
 
     public void onResetEndDateClick(View view) {
@@ -586,6 +600,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset filter field.
         m_filterEndDate = null;
+
+        // Hide "reset" button.
+        findViewById(R.id.buttonResetEndDate).setVisibility(View.INVISIBLE);
     }
 
     // Class for the date picker.
@@ -651,6 +668,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Set filter field.
             m_filterEndDate = date;
+
+            // Show "reset" button.
+            findViewById(R.id.buttonResetEndDate).setVisibility(View.VISIBLE);
         }
         catch (Exception e) {
             Log.w("Setting date", e.getLocalizedMessage());
@@ -691,6 +711,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Set filter field.
             m_filterStartDate = date;
+
+            // Show "reset" button.
+            findViewById(R.id.buttonResetStartDate).setVisibility(View.VISIBLE);
         }
         catch (Exception e) {
             Log.w("Setting date", e.getLocalizedMessage());
