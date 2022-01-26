@@ -182,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
                     if (exportMessage) {
 //                        String text = formatMessage(body, type, address, date);
 //                        lstSms.add(text);
-                        MessageDetails details = new MessageDetails(body, type, address, date);
+                        String contact = m_filterContact.isEmpty() ?
+                                getContactDisplayName(address) : m_filterContactDisplayName;
+                        MessageDetails details = new MessageDetails(body, type, contact, date);
                         lstSms.add(details);
                     }
 
@@ -215,8 +217,7 @@ public class MainActivity extends AppCompatActivity {
         String typeName = getMessageTypeName(type);
         String line = typeName + " at " + date + ":\n";
         line += body;
-        String contact = m_filterContact.isEmpty() ? getContactDisplayName(address) : m_filterContactDisplayName;
-        line += "\nContact: " + contact;
+        line += "\nContact: " + address;
         line += "\n---";
         return line;
     }
