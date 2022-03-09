@@ -71,10 +71,12 @@
                 android:layout_weight="1"
                 android:alpha="@dimen/reset_button_alpha"
                 android:hint="@string/reset_contact_label"
+                app:hintTextColor="#757575"
                 app:icon="@android:drawable/ic_input_delete"
+                app:iconTintMode="multiply"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -112,10 +114,11 @@
                 android:layout_weight="1"
                 android:alpha="@dimen/reset_button_alpha"
                 android:hint="@string/button_reset_start_date_label"
+                app:hintTextColor="#757575"
                 app:icon="@android:drawable/ic_input_delete"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -153,9 +156,11 @@
                 android:layout_weight="1"
                 android:alpha="@dimen/reset_button_alpha"
                 android:hint="@string/button_reset_end_date_label"
+                app:hintTextColor="#757575"
                 app:icon="@android:drawable/ic_input_delete"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TextContrastCheck" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
