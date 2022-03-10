@@ -10,12 +10,24 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Email Options">
 
+        <MultiSelectListPreference
+            android:defaultValue="@array/email_files_to_attach"
+            android:entries="@array/email_files_to_attach"
+            android:entryValues="@array/email_files_to_attach"
+            android:key="email_attachments"
+            android:title="Choose files to attach" />
+
     </PreferenceCategory>
-    <MultiSelectListPreference
-        android:defaultValue="@array/email_files_to_attach"
-        android:entries="@array/email_files_to_attach"
-        android:entryValues="@array/email_files_to_attach"
-        android:key="email_attachments"
-        android:title="Choose files to attach" />
+
+    <PreferenceCategory android:title="Preview Options">
+
+        <ListPreference
+            android:defaultValue="@string/text_file"
+            android:entries="@array/email_files_to_attach"
+            android:entryValues="@array/email_files_to_attach"
+            android:key="file_to_preview"
+            android:title="Choose file to preview" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

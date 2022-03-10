@@ -762,8 +762,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private void viewExportedFile() {
         try {
+            // Check preference.
+            String fileToPreview = getFilePreviewPreference();
+
             // Get file path.
-            String path = getExportedTextFilePath();
+            String path;
+
+            if (fileToPreview.equals(getString(R.string.xml_file))) {
+                path = getExportedXmlFilePath();
+            }
+            else {
+                path = getExportedTextFilePath();
+            }
 
             // Check that file exists.
             File file = new File(path);
@@ -784,6 +794,16 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.w("Open Folder", e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * Get the preference for which file to preview.
+     * @return The preference value.
+     */
+    private String getFilePreviewPreference() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString("file_to_preview", "");
     }
 
     /**
