@@ -321,13 +321,33 @@ public class MainActivity extends AppCompatActivity {
 
     // Export SMS messages.
     private void exportTextMessages() {
+        // Exit if no export files enabled.
+        if (!exportTextFileEnabled() && !exportXmlFileEnabled()) {
+            showToastMessage("Nothing exported. See Settings screen.");
+            return;
+        }
+
+        // Export the messages.
         List<MessageDetails> textMessages = getAllSms();
         Log.i("Export", "There are " + textMessages.size() + " messages.");
-        writeExportFile(textMessages);
+
+        if (exportTextFileEnabled()) {
+            writeExportTextFile(textMessages);
+        }
 
         if (exportXmlFileEnabled()) {
             writeExportFileXml(textMessages);
         }
+    }
+
+    /**
+     * Check if export to text is enabled.
+     * @return Whether exporting to text is enabled.
+     */
+    private boolean exportTextFileEnabled() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean("export_text", true);
     }
 
     /**
@@ -531,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Write the exported file.
-    private void writeExportFile(List<MessageDetails> textMessages) {
+    private void writeExportTextFile(List<MessageDetails> textMessages) {
         try {
             // Update the label.
             TextView label = findViewById(R.id.textViewHint);
