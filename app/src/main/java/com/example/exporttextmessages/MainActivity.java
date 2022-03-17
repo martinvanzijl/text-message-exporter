@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
     // Export SMS messages.
     private void exportTextMessages() {
         // Exit if no export files enabled.
-        if (!exportTextFileEnabled() && !exportXmlFileEnabled()) {
+        if (!exportTextFileEnabled() && !exportXmlFileEnabled() && !exportCsvFileEnabled()) {
             showToastMessage("Nothing exported. See Settings screen.");
             return;
         }
@@ -338,6 +338,100 @@ public class MainActivity extends AppCompatActivity {
         if (exportXmlFileEnabled()) {
             writeExportFileXml(textMessages);
         }
+
+        if (exportCsvFileEnabled()) {
+            writeExportFileCsv(textMessages);
+        }
+    }
+
+    /**
+     * Export messages to an CSV file.
+     * @param textMessages The messages.
+     */
+    private void writeExportFileCsv(List<MessageDetails> textMessages) {
+        try {
+            // Update the label.
+            TextView label = findViewById(R.id.textViewHint);
+            label.setText(R.string.label_status_busy_exporting);
+
+            // Get the path.
+            String filePath = getExportedCsvFilePath();
+
+            // Create the file.
+            File file = new File(filePath);
+            if (!file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+            }
+
+            StringBuilder builder = new StringBuilder();
+
+            // Add header row.
+            String header = "Date,Contact,Type,Body";
+            builder.append(header).append("\n");
+
+            // Add body rows.
+            for (MessageDetails message: textMessages) {
+                builder.append(message.getDate().toString()).append(",");
+                builder.append(message.getAddress()).append(",");
+                builder.append(message.getType()).append(",");
+                builder.append(escapeCsvString(message.getBody()));
+                builder.append("\n");
+            }
+
+            // Write to the file.
+            FileWriter writer = new FileWriter(file);
+            writer.write(builder.toString());
+            writer.close();
+
+            // Update the label.
+            label.setText(R.string.label_status_text_file_written);
+        } catch (IOException e) {
+            Log.w("Export", e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Ensure special characters are escaped in the String for CSV.
+     * From: https://stackoverflow.com/questions/10451842/how-to-escape-comma-and-double-quote-at-same-time-for-csv-file
+     * @param text The original text.
+     * @return The escaped test.
+     */
+    private String escapeCsvString(String text) {
+
+//        if (text.contains("\"") || text.contains(",")) {
+//            // Must escape text.
+            StringBuilder builder = new StringBuilder();
+            text = text.replaceAll("\"", "\"\"");
+            builder.append("\"");
+            builder.append(text);
+            builder.append("\"");
+            return builder.toString();
+//        }
+
+//        // Return as is, no escape needed.
+//        return text;
+    }
+
+    /**
+     * Get the path the CSV file must be exported to.
+     * @return The file the CSV file is exported to.
+     */
+    private String getExportedCsvFilePath() throws IOException {
+        File dir = getExportFileDir();
+        String fileName = "export.csv";
+
+        return dir + File.separator + fileName;
+    }
+
+    /**
+     * Check if export to CSV is enabled.
+     * @return Whether exporting to CSV is enabled.
+     */
+    private boolean exportCsvFileEnabled() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean("export_csv", false);
     }
 
     /**
@@ -791,6 +885,9 @@ public class MainActivity extends AppCompatActivity {
             if (fileToPreview.equals(getString(R.string.xml_file))) {
                 path = getExportedXmlFilePath();
             }
+            else if (fileToPreview.equals(getString(R.string.csv_file))) {
+                path = getExportedCsvFilePath();
+            }
             else {
                 path = getExportedTextFilePath();
             }
@@ -923,6 +1020,7 @@ public class MainActivity extends AppCompatActivity {
         // Check which files to attach.
         boolean attachTextFile = attachTextFileToEmailEnabled();
         boolean attachXmlFile = attachXmlFileToEmailEnabled();
+        boolean attachCsvFile = attachCsvFileToEmailEnabled();
 
         try {
             // Use file provider URI.
@@ -954,6 +1052,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     Log.w("Text Message Exporter", "XML file does not exist.");
+                }
+            }
+
+            // Attach CSV file if setting enabled.
+            if (attachCsvFile) {
+                String csvFilePath = getExportedCsvFilePath();
+
+                File csvFile = new File(csvFilePath);
+                if (csvFile.exists()) {
+                    Uri csvAttachmentURI = FileProvider.getUriForFile(this, authority, csvFile);
+                    attachmentUris.add(csvAttachmentURI);
+                }
+                else {
+                    Log.w("Text Message Exporter", "CSV file does not exist.");
                 }
             }
 
@@ -1006,6 +1118,27 @@ public class MainActivity extends AppCompatActivity {
             Log.w("Email", e.getLocalizedMessage());
             showToastMessage("Could not find app to send email.");
         }
+    }
+
+    /**
+     * Check if CSV file should be attached to the email.
+     * @return Whether the CSV file should be attached to the email.
+     */
+    private boolean attachCsvFileToEmailEnabled() {
+        // Get the preference.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        String key = "email_attachments";
+
+        // Read preference if it exists.
+        if (sharedPreferences.contains(key)) {
+            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+            return attachments.contains(getString(R.string.csv_file));
+        }
+
+        // Otherwise, attach by default.
+        return true;
     }
 
     /**

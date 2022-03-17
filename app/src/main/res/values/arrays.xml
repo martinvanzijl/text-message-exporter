@@ -3,7 +3,9 @@
     <array name="email_files_to_attach">
         <item>@string/text_file</item>
         <item>@string/xml_file</item>
+        <item>@string/csv_file</item>
     </array>
     <string name="text_file">Text file</string>
     <string name="xml_file">XML file</string>
+    <string name="csv_file">CSV file</string>
 </resources>

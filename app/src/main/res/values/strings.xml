@@ -25,4 +25,5 @@
     <string name="button_reset_end_date_label">Reset</string>
     <string name="reset_contact_label">Reset</string>
     <string name="export_text_label">Export plain text file</string>
+    <string name="export_csv_label">Export CSV file</string>
 </resources>

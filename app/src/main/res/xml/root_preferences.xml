@@ -11,6 +11,10 @@
             android:defaultValue="false"
             android:key="export_xml"
             android:title="@string/export_xml_label" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="export_csv"
+            android:title="@string/export_csv_label" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="Email Options">
