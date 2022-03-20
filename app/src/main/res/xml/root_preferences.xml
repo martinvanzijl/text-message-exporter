@@ -3,39 +3,12 @@
 
     <PreferenceCategory app:title="@string/settings_export_header">
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="export_text"
-            android:title="@string/export_text_label" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="export_xml"
-            android:title="@string/export_xml_label" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="export_csv"
-            android:title="@string/export_csv_label" />
-
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Email Options">
-
-        <MultiSelectListPreference
-            android:defaultValue="@array/email_files_to_attach"
-            android:entries="@array/email_files_to_attach"
-            android:entryValues="@array/email_files_to_attach"
-            android:key="email_attachments"
-            android:title="Choose files to attach" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="Preview Options">
-
         <ListPreference
-            android:defaultValue="@string/text_file"
-            android:entries="@array/email_files_to_attach"
-            android:entryValues="@array/email_files_to_attach"
-            android:key="file_to_preview"
-            android:title="Choose file to preview" />
+            android:defaultValue="@string/text"
+            android:entries="@array/export_files_types"
+            android:entryValues="@array/export_files_types"
+            android:key="exported_file_type"
+            android:title="Choose exported file type" />
 
     </PreferenceCategory>
 

@@ -429,9 +429,10 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether exporting to CSV is enabled.
      */
     private boolean exportCsvFileEnabled() {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getBoolean("export_csv", false);
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//        return sharedPreferences.getBoolean("export_csv", false);
+        return getExportFileType().equals(getString(R.string.csv));
     }
 
     /**
@@ -439,9 +440,20 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether exporting to text is enabled.
      */
     private boolean exportTextFileEnabled() {
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//        return sharedPreferences.getBoolean("export_text", true);
+        return getExportFileType().equals(getString(R.string.text));
+    }
+
+    /**
+     * Get the chosen export file type.
+     * @return The file type.
+     */
+    private String getExportFileType() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getBoolean("export_text", true);
+        return sharedPreferences.getString("exported_file_type", getString(R.string.text));
     }
 
     /**
@@ -449,9 +461,10 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether exporting to XML is enabled.
      */
     private boolean exportXmlFileEnabled() {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getBoolean("export_xml", false);
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//        return sharedPreferences.getBoolean("export_xml", false);
+        return getExportFileType().equals(getString(R.string.xml));
     }
 
     /**
@@ -877,15 +890,18 @@ public class MainActivity extends AppCompatActivity {
     private void viewExportedFile() {
         try {
             // Check preference.
-            String fileToPreview = getFilePreviewPreference();
+//            String fileToPreview = getFilePreviewPreference();
+            String fileToPreview = getExportFileType();
 
             // Get file path.
             String path;
 
-            if (fileToPreview.equals(getString(R.string.xml_file))) {
+//            if (fileToPreview.equals(getString(R.string.xml_file))) {
+            if (fileToPreview.equals(getString(R.string.xml))) {
                 path = getExportedXmlFilePath();
             }
-            else if (fileToPreview.equals(getString(R.string.csv_file))) {
+//            else if (fileToPreview.equals(getString(R.string.csv_file))) {
+            else if (fileToPreview.equals(getString(R.string.csv))) {
                 path = getExportedCsvFilePath();
             }
             else {
@@ -918,9 +934,11 @@ public class MainActivity extends AppCompatActivity {
      * @return The preference value.
      */
     private String getFilePreviewPreference() {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getString("file_to_preview", "");
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//        return sharedPreferences.getString("file_to_preview", "");
+
+        return getExportFileType();
     }
 
     /**
@@ -1125,20 +1143,22 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether the CSV file should be attached to the email.
      */
     private boolean attachCsvFileToEmailEnabled() {
-        // Get the preference.
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
+//        // Get the preference.
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//
+//        String key = "email_attachments";
+//
+//        // Read preference if it exists.
+//        if (sharedPreferences.contains(key)) {
+//            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+//            return attachments.contains(getString(R.string.csv_file));
+//        }
+//
+//        // Otherwise, attach by default.
+//        return true;
 
-        String key = "email_attachments";
-
-        // Read preference if it exists.
-        if (sharedPreferences.contains(key)) {
-            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
-            return attachments.contains(getString(R.string.csv_file));
-        }
-
-        // Otherwise, attach by default.
-        return true;
+        return exportCsvFileEnabled();
     }
 
     /**
@@ -1146,20 +1166,22 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether the text file should be attached to the email.
      */
     private boolean attachTextFileToEmailEnabled() {
-        // Get the preference.
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
+//        // Get the preference.
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//
+//        String key = "email_attachments";
+//
+//        // Read preference if it exists.
+//        if (sharedPreferences.contains(key)) {
+//            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+//            return attachments.contains(getString(R.string.text_file));
+//        }
 
-        String key = "email_attachments";
+//        // Otherwise, attach by default.
+//        return true;
 
-        // Read preference if it exists.
-        if (sharedPreferences.contains(key)) {
-            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
-            return attachments.contains(getString(R.string.text_file));
-        }
-
-        // Otherwise, attach by default.
-        return true;
+        return exportTextFileEnabled();
     }
 
     /**
@@ -1167,19 +1189,21 @@ public class MainActivity extends AppCompatActivity {
      * @return Whether the XML file should be attached to the email.
      */
     private boolean attachXmlFileToEmailEnabled() {
-        // Get the preference.
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
+//        // Get the preference.
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//
+//        String key = "email_attachments";
+//
+//        // Read preference if it exists.
+//        if (sharedPreferences.contains(key)) {
+//            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
+//            return attachments.contains(getString(R.string.xml_file));
+//        }
+//
+//        // Otherwise, attach by default.
+//        return true;
 
-        String key = "email_attachments";
-
-        // Read preference if it exists.
-        if (sharedPreferences.contains(key)) {
-            Set<String> attachments = sharedPreferences.getStringSet("email_attachments", new HashSet<>());
-            return attachments.contains(getString(R.string.xml_file));
-        }
-
-        // Otherwise, attach by default.
-        return true;
+        return exportXmlFileEnabled();
     }
 }
