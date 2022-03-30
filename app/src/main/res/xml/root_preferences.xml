@@ -11,5 +11,11 @@
             android:title="Choose exported file type" />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="User Interface">
+
+        <SwitchPreference
+            android:key="show_progress_bar"
+            android:title="Show progress bar for export" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

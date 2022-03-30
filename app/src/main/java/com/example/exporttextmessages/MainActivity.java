@@ -14,6 +14,8 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
@@ -24,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,11 +52,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("CanBeFinal")
     private Map<String, String> mContactNames = new HashMap<>();
     private ActivityResultLauncher<Intent> chooseContactActivity = null;
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +118,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.buttonAllContacts).setVisibility(View.INVISIBLE);
         findViewById(R.id.buttonResetStartDate).setVisibility(View.INVISIBLE);
         findViewById(R.id.buttonResetEndDate).setVisibility(View.INVISIBLE);
+
+        // Show/hide progress bar as preferred.
+        updateProgressBarVisibility();
+
+        // Update visibility when preference is changed.
+        prefListener = (sharedPreferences, key) -> {
+            if (key.equals("show_progress_bar")) {
+                updateProgressBarVisibility();
+            }
+        };
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
 
 //    @SuppressLint("NewApi")
@@ -319,6 +336,16 @@ public class MainActivity extends AppCompatActivity {
                 PackageManager.PERMISSION_GRANTED;
     }
 
+    /**
+     * Class to invoke the task.
+     */
+    public class Invoker implements Executor {
+        @Override
+        public void execute(Runnable r) {
+            r.run();
+        }
+    }
+
     // Export SMS messages.
     private void exportTextMessages() {
         // Exit if no export files enabled.
@@ -328,20 +355,40 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Export the messages.
-        List<MessageDetails> textMessages = getAllSms();
-        Log.i("Export", "There are " + textMessages.size() + " messages.");
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        executor.execute(() -> {
+            // Debug.
+            Log.i("Export", "Starting task.");
 
-        if (exportTextFileEnabled()) {
-            writeExportTextFile(textMessages);
-        }
+            // Get the progress bar.
+            ProgressBar bar = findViewById(R.id.progressBarExport);
+            bar.setProgress(0);
 
-        if (exportXmlFileEnabled()) {
-            writeExportFileXml(textMessages);
-        }
+            // Do the export.
+            List<MessageDetails> textMessages = getAllSms();
+            Log.i("Export", "There are " + textMessages.size() + " messages.");
 
-        if (exportCsvFileEnabled()) {
-            writeExportFileCsv(textMessages);
-        }
+            // Update progress bar.
+            bar.setProgress(50);
+
+            if (exportTextFileEnabled()) {
+                writeExportTextFile(textMessages);
+            }
+
+            if (exportXmlFileEnabled()) {
+                writeExportFileXml(textMessages);
+            }
+
+            if (exportCsvFileEnabled()) {
+                writeExportFileCsv(textMessages);
+            }
+
+            // Update progress bar.
+            bar.setProgress(100);
+
+            // Debug.
+            Log.i("Export", "Ending task.");
+        });
     }
 
     /**
@@ -350,9 +397,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private void writeExportFileCsv(List<MessageDetails> textMessages) {
         try {
+            // Create handler.
+            Handler handler = new Handler(Looper.getMainLooper());
+
             // Update the label.
-            TextView label = findViewById(R.id.textViewHint);
-            label.setText(R.string.label_status_busy_exporting);
+            handler.post(() -> {
+                TextView label = findViewById(R.id.textViewHint);
+                label.setText(R.string.label_status_busy_exporting);
+            });
 
             // Get the path.
             String filePath = getExportedCsvFilePath();
@@ -385,7 +437,10 @@ public class MainActivity extends AppCompatActivity {
             writer.close();
 
             // Update the label.
-            label.setText(R.string.label_status_text_file_written);
+            handler.post(() -> {
+                TextView label = findViewById(R.id.textViewHint);
+                label.setText(R.string.label_status_text_file_written);
+            });
         } catch (IOException e) {
             Log.w("Export", e.getLocalizedMessage());
         }
@@ -667,12 +722,18 @@ public class MainActivity extends AppCompatActivity {
             // Get the path.
             String filePath = getExportedTextFilePath();
 
+            // Debug.
+            appendLog("Creating file.");
+
             // Create the file.
             File file = new File(filePath);
             if (!file.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
             }
+
+            // Debug.
+            appendLog("Writing messages.");
 
             // Write to the file.
             FileWriter writer = new FileWriter(file);
@@ -682,6 +743,9 @@ public class MainActivity extends AppCompatActivity {
                 writer.write("\n");
             }
             writer.close();
+
+            // Debug.
+            appendLog("Updating label again.");
 
             // Update the label.
             label.setText(R.string.label_status_text_file_written);
@@ -1205,5 +1269,27 @@ public class MainActivity extends AppCompatActivity {
 //        return true;
 
         return exportXmlFileEnabled();
+    }
+
+    /**
+     * Update visibility of progress bar based on preferences.
+     */
+    private void updateProgressBarVisibility() {
+        if (showProgressBarEnabled()) {
+            findViewById(R.id.progressBarExport).setVisibility(View.VISIBLE);
+        }
+        else {
+            findViewById(R.id.progressBarExport).setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Check if the progress bar should be shown.
+     * @return Whether the progress bar should be shown.
+     */
+    private boolean showProgressBarEnabled() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean("show_progress_bar", false);
     }
 }

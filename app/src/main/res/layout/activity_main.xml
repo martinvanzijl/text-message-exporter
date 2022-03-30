@@ -13,7 +13,7 @@
         android:text="@string/button_export_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewHint" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBarExport" />
 
     <TextView
         android:id="@+id/textViewHint"
@@ -60,8 +60,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/contact_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@id/buttonAllContacts" />
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonAllContacts"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/buttonAllContacts"
@@ -103,8 +103,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_start_date"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetStartDate"/>
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetStartDate"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/buttonResetStartDate"
@@ -145,8 +145,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_end_date"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetEndDate"/>
+                app:layout_constraintBaseline_toBaselineOf="@id/buttonResetEndDate"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/buttonResetEndDate"
@@ -185,10 +185,21 @@
         android:id="@+id/buttonEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/button_email_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonExport" />
+
+    <ProgressBar
+        android:id="@+id/progressBarExport"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHint" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
