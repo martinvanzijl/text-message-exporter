@@ -372,6 +372,15 @@ public class MainActivity extends AppCompatActivity {
             // Update progress bar.
             bar.setProgress(50);
 
+            // Create handler.
+            Handler handler = new Handler(Looper.getMainLooper());
+
+            // Update the label.
+            handler.post(() -> {
+                TextView label = findViewById(R.id.textViewHint);
+                label.setText(R.string.label_status_busy_exporting);
+            });
+
             if (exportTextFileEnabled()) {
                 writeExportTextFile(textMessages);
             }
@@ -387,6 +396,12 @@ public class MainActivity extends AppCompatActivity {
             // Update progress bar.
             bar.setProgress(100);
 
+            // Update the label.
+            handler.post(() -> {
+                TextView label = findViewById(R.id.textViewHint);
+                label.setText(R.string.label_status_text_file_written);
+            });
+
             // Debug.
             Log.i("Export", "Ending task.");
         });
@@ -398,15 +413,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void writeExportFileCsv(List<MessageDetails> textMessages) {
         try {
-            // Create handler.
-            Handler handler = new Handler(Looper.getMainLooper());
-
-            // Update the label.
-            handler.post(() -> {
-                TextView label = findViewById(R.id.textViewHint);
-                label.setText(R.string.label_status_busy_exporting);
-            });
-
             // Get the path.
             String filePath = getExportedCsvFilePath();
 
@@ -436,12 +442,6 @@ public class MainActivity extends AppCompatActivity {
             FileWriter writer = new FileWriter(file);
             writer.write(builder.toString());
             writer.close();
-
-            // Update the label.
-            handler.post(() -> {
-                TextView label = findViewById(R.id.textViewHint);
-                label.setText(R.string.label_status_text_file_written);
-            });
         } catch (IOException e) {
             Log.w("Export", e.getLocalizedMessage());
         }
@@ -529,10 +529,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void writeExportFileXml(List<MessageDetails> textMessages) {
         try {
-            // Update the label.
-            TextView label = findViewById(R.id.textViewHint);
-            label.setText(R.string.label_status_busy_exporting);
-
             // Get the directory.
             String filePath = getExportedXmlFilePath();
 
@@ -571,9 +567,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (TransformerException | IOException e) {
                 Log.w("XML", e.getLocalizedMessage());
             }
-
-            // Update the label.
-            label.setText(R.string.label_status_text_file_written);
         } catch (Exception e) {
             Log.w("Export", e.getLocalizedMessage());
         }
@@ -716,11 +709,7 @@ public class MainActivity extends AppCompatActivity {
     // Write the exported file.
     private void writeExportTextFile(List<MessageDetails> textMessages) {
         try {
-            // Update the label.
-            TextView label = findViewById(R.id.textViewHint);
-            label.setText(R.string.label_status_busy_exporting);
-
-            // Get the path.
+             // Get the path.
             String filePath = getExportedTextFilePath();
 
             // Debug.
@@ -744,12 +733,6 @@ public class MainActivity extends AppCompatActivity {
                 writer.write("\n");
             }
             writer.close();
-
-            // Debug.
-            appendLog("Updating label again.");
-
-            // Update the label.
-            label.setText(R.string.label_status_text_file_written);
         } catch (IOException e) {
             Log.w("Export", e.getLocalizedMessage());
         }
