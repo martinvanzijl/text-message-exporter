@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private Map<String, String> mContactNames = new HashMap<>();
     private ActivityResultLauncher<Intent> chooseContactActivity = null;
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener = null;
+    private ActivityResultLauncher<Intent> previewActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -967,6 +968,12 @@ public class MainActivity extends AppCompatActivity {
 //            else if (fileToPreview.equals(getString(R.string.csv_file))) {
             else if (fileToPreview.equals(getString(R.string.csv))) {
                 path = getExportedCsvFilePath();
+
+                // Use the internal previewer for CSV files.
+                Intent intent = new Intent(this, PreviewActivity.class);
+                intent.putExtra(PreviewActivity.INTENT_FILE_TO_PREVIEW, path);
+                startActivity(intent);
+                return;
             }
             else {
                 path = getExportedTextFilePath();
