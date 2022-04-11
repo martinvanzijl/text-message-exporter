@@ -18,4 +18,12 @@
             android:title="Show progress bar for export" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/logging_header">
+
+        <SwitchPreferenceCompat
+            app:key="enable_logging"
+            app:title="@string/enable_logging_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

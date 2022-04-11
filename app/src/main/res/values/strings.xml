@@ -27,4 +27,6 @@
     <string name="export_text_label">Export plain text file</string>
     <string name="export_csv_label">Export CSV file</string>
     <string name="preview_content_hint">The content of the previewed file.</string>
+    <string name="enable_logging_title">Enable logging</string>
+    <string name="logging_header">Logging</string>
 </resources>

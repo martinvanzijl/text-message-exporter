@@ -912,8 +912,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Write a message to the log file (if enabled).
+     */
     void appendLog(String message) {
-        Logger.appendLog(message);
+        Logger.appendLog(this, message);
     }
 
     @Override

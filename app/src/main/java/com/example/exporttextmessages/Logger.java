@@ -1,7 +1,11 @@
 package com.example.exporttextmessages;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,15 +18,18 @@ import java.util.Locale;
 public class Logger {
 
     // Check if logging is enabled.
-    private static boolean loggingEnabled() {
-        return false;
+    private static boolean loggingEnabled(Context context) {
+        // Check if enabled in settings.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("enable_logging", false);
     }
 
     // Write a message to the log file.
-    public static void appendLog(String text)
+    public static void appendLog(Context context, String text)
     {
         // Exit if not enabled.
-        if (!loggingEnabled()) {
+        if (!loggingEnabled(context)) {
             return;
         }
 
