@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String formatMessage(String body, int type, String address, Date date) {
-        String typeName = getMessageTypeName(type);
+        String typeName = Utils.getMessageTypeName(type);
         String line = typeName + " at " + date + ":\n";
         line += body;
         line += "\nContact: " + address;
@@ -272,18 +272,6 @@ public class MainActivity extends AppCompatActivity {
 
         mContactNames.put(phoneNumber, contactName);
         return contactName;
-    }
-
-    // Get name for the message type.
-    private String getMessageTypeName(int type) {
-        String typeName = "Unknown";
-        if (type == Telephony.Sms.MESSAGE_TYPE_INBOX) {
-            typeName = "Received";
-        }
-        else if (type == Telephony.Sms.MESSAGE_TYPE_SENT) {
-            typeName = "Sent";
-        }
-        return typeName;
     }
 
     public void onButtonExportClick(@SuppressWarnings("unused") View view) {
