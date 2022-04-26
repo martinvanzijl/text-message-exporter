@@ -9,6 +9,11 @@ import java.util.Date;
  * Represents details of a text message.
  */
 public class MessageDetails {
+
+    // Message types from database.
+    private static final int TYPE_RECEIVED = 1;
+    private static final int TYPE_SENT = 2;
+
     @SuppressWarnings("CanBeFinal")
     private String mBody;
     @SuppressWarnings("CanBeFinal")
@@ -48,12 +53,20 @@ public class MessageDetails {
      */
     public void addToXml(Document doc, Element parentElement) {
         Element messageElement = doc.createElement("message");
-        messageElement.setAttribute("type", String.valueOf(mType));
+        messageElement.setAttribute("type", getTypeString());
         messageElement.setAttribute("contact", mAddress);
         messageElement.setAttribute("date", mDate.toString());
         Element bodyElement = doc.createElement("body");
         bodyElement.appendChild(doc.createTextNode(mBody));
         messageElement.appendChild(bodyElement);
         parentElement.appendChild(messageElement);
+    }
+
+    /**
+     * Return the type (sent or received) as a string.
+     * @return "sent" or "received".
+     */
+    private String getTypeString() {
+        return Utils.getMessageTypeName(mType).toLowerCase();
     }
 }
