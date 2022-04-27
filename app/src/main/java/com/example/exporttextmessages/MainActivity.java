@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
             for (MessageDetails message: textMessages) {
                 builder.append(message.getDate().toString()).append(",");
                 builder.append(message.getAddress()).append(",");
-                builder.append(message.getType()).append(",");
+                builder.append(message.getTypeString()).append(",");
                 builder.append(escapeCsvString(message.getBody()));
                 builder.append("\n");
             }

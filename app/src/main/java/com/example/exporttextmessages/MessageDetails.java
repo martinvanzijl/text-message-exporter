@@ -66,7 +66,7 @@ public class MessageDetails {
      * Return the type (sent or received) as a string.
      * @return "sent" or "received".
      */
-    private String getTypeString() {
+    public String getTypeString() {
         return Utils.getMessageTypeName(mType).toLowerCase();
     }
 }
