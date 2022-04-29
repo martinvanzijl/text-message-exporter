@@ -1,13 +1,17 @@
 package com.example.exporttextmessages;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,15 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        // Set label when preference changed.
+        prefListener = (sharedPreferences, key) -> {
+            if (key.equals("exported_file_type")) {
+                // TODO: Update label.
+            }
+        };
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
