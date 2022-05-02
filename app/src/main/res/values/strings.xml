@@ -29,5 +29,6 @@
     <string name="preview_content_hint">The content of the previewed file.</string>
     <string name="enable_logging_title">Enable logging</string>
     <string name="logging_header">Logging</string>
-    <string name="choose_file_type_label">Choose exported file type (%1$s)</string>
+    <string name="choose_file_type_label">Choose exported file type</string>
+    <string name="file_type_chosen_value">Currently %1$s</string>
 </resources>

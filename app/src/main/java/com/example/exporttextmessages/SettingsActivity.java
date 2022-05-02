@@ -75,7 +75,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Set the widget label.
         assert pref != null;
-        pref.setTitle(getString(R.string.choose_file_type_label, value));
+        //pref.setTitle(getString(R.string.choose_file_type_label));
+        pref.setSummary(getString(R.string.file_type_chosen_value, value));
     }
 
     /**
