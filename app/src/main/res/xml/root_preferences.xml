@@ -8,7 +8,7 @@
             android:entries="@array/export_files_types"
             android:entryValues="@array/export_files_types"
             android:key="exported_file_type"
-            android:title="Choose exported file type" />
+            android:title="@string/choose_file_type_label" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="User Interface">
