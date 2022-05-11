@@ -31,4 +31,6 @@
     <string name="logging_header">Logging</string>
     <string name="choose_file_type_label">Choose exported file type</string>
     <string name="file_type_chosen_value">%1$s</string>
+    <string name="email_options_label">Email Options</string>
+    <string name="default_email_address_label">Default recipient email address</string>
 </resources>

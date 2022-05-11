@@ -1154,6 +1154,12 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            // Add default recipient email address.
+            String recipient = getDefaultRecipientEmailAddress();
+            if (!recipient.isEmpty()) {
+                recipients = new String[] { recipient };
+            }
+
             // The intent does not have a URI, so declare the "text/plain" MIME type
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients);
@@ -1272,5 +1278,16 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getBoolean("show_progress_bar", false);
+    }
+
+    /**
+     * Get the default recipient email address.
+     * @return The default recipient email address.
+     */
+    private String getDefaultRecipientEmailAddress() {
+        // Check if enabled in settings.
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString("default_recipient_email_address", "");
     }
 }

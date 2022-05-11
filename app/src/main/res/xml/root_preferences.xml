@@ -26,4 +26,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/email_options_label">
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="default_recipient_email_address"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/default_email_address_label"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
