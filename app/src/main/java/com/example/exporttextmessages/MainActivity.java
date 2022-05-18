@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String formatMessage(String body, int type, String address, Date date) {
+        // TODO: Change message format here.
         String typeName = Utils.getMessageTypeName(type);
         String line = typeName + " at " + date + ":\n";
         line += body;
