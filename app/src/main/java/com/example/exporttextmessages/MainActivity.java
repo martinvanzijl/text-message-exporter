@@ -231,12 +231,28 @@ public class MainActivity extends AppCompatActivity {
         return formatMessage(m.getBody(), m.getType(), m.getAddress(), m.getDate());
     }
 
+    /**
+     * Format the given message for text export.
+     * @param body The body of the message.
+     * @param type The type (sent or received).
+     * @param address The contact it was sent to or received from.
+     * @param date The time of the message.
+     * @return The formatted message.
+     */
     private String formatMessage(String body, int type, String address, Date date) {
-        // TODO: Change message format here.
+        // E.g. "To: Android Phone 1".
+        String line = (type == MessageDetails.TYPE_SENT) ? "To: " : "From: ";
+        line += address + "\n";
+
+        // E.g. "Sent at 5 pm on 2 May 2022".
         String typeName = Utils.getMessageTypeName(type);
-        String line = typeName + " at " + date + ":\n";
+        line += typeName + " at " + date + ":\n";
+
+        // Message contents.
         line += body;
-        line += "\nContact: " + address;
+//        line += "\nContact: " + address;
+
+        // Separator.
         line += "\n---";
         return line;
     }
