@@ -11,8 +11,8 @@ import java.util.Date;
 public class MessageDetails {
 
     // Message types from database.
-    private static final int TYPE_RECEIVED = 1;
-    private static final int TYPE_SENT = 2;
+    static final int TYPE_RECEIVED = 1;
+    static final int TYPE_SENT = 2;
 
     @SuppressWarnings("CanBeFinal")
     private String mBody;
