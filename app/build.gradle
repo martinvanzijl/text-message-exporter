@@ -14,7 +14,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        setProperty("archivesBaseName", "text-message-exporter")
+        setProperty("archivesBaseName", "text-message-exporter-v$versionName")
     }
 
     buildTypes {
