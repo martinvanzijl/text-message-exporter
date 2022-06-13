@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
     // Export SMS messages.
     private void exportTextMessages() {
         // Exit if no export files enabled.
-        if (!exportTextFileEnabled() && !exportXmlFileEnabled() && !exportCsvFileEnabled()) {
+        if (!exportTextFileEnabled() && !exportXmlFileEnabled() && !exportCsvFileEnabled() && !exportHtmlFileEnabled()) {
             showToastMessage("Nothing exported. See Settings screen.");
             return;
         }
@@ -396,6 +396,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (exportCsvFileEnabled()) {
                 writeExportFileCsv(textMessages);
+            }
+
+            if (exportHtmlFileEnabled()) {
+                writeExportFileHtml(textMessages);
             }
 
             // Update progress bar.
@@ -572,6 +576,48 @@ public class MainActivity extends AppCompatActivity {
             } catch (TransformerException | IOException e) {
                 Log.w("XML", e.getLocalizedMessage());
             }
+        } catch (Exception e) {
+            Log.w("Export", e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Check if export to HTML is enabled.
+     * @return Whether exporting to HTML is enabled.
+     */
+    private boolean exportHtmlFileEnabled() {
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(this);
+//        return sharedPreferences.getBoolean("export_html", false);
+        return getExportFileType().equals(getString(R.string.html));
+    }
+
+    /**
+     * Export messages to an HTML file.
+     * @param textMessages The messages.
+     */
+    private void writeExportFileHtml(List<MessageDetails> textMessages) {
+        try {
+            // Create exporter.
+            HtmlExporter exporter = new HtmlExporter();
+
+            // Create HTML.
+            String html = exporter.getHtml(textMessages);
+
+            // Get the file path.
+            String filePath = getExportedHtmlFilePath();
+
+            // Create the file.
+            File file = new File(filePath);
+            if (!file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                file.createNewFile();
+            }
+
+            // Write to the file.
+            FileWriter writer = new FileWriter(file);
+            writer.write(html);
+            writer.close();
         } catch (Exception e) {
             Log.w("Export", e.getLocalizedMessage());
         }
@@ -966,6 +1012,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return;
             }
+            if (fileToPreview.equals(getString(R.string.html))) {
+                path = getExportedHtmlFilePath();
+            }
             else {
                 path = getExportedTextFilePath();
             }
@@ -1093,6 +1142,18 @@ public class MainActivity extends AppCompatActivity {
         return dir + File.separator + fileName;
     }
 
+    /**
+     * Get the path the HTML file must be exported to.
+     * @return The file the HTML file is exported to.
+     */
+    private String getExportedHtmlFilePath() throws IOException {
+
+        File dir = getExportFileDir();
+        String fileName = "export.html";
+
+        return dir + File.separator + fileName;
+    }
+
     public void onButtonEmailClick(View view) {
         // Print message.
         Log.i("Email", "Email button clicked.");
@@ -1101,6 +1162,7 @@ public class MainActivity extends AppCompatActivity {
         boolean attachTextFile = attachTextFileToEmailEnabled();
         boolean attachXmlFile = attachXmlFileToEmailEnabled();
         boolean attachCsvFile = attachCsvFileToEmailEnabled();
+        boolean attachHtmlFile = attachHtmlFileToEmailEnabled();
 
         try {
             // Use file provider URI.
@@ -1146,6 +1208,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     Log.w("Text Message Exporter", "CSV file does not exist.");
+                }
+            }
+
+            // Attach HTML file if setting enabled.
+            if (attachHtmlFile) {
+                String htmlFilePath = getExportedHtmlFilePath();
+
+                File htmlFile = new File(htmlFilePath);
+                if (htmlFile.exists()) {
+                    Uri csvAttachmentURI = FileProvider.getUriForFile(this, authority, htmlFile);
+                    attachmentUris.add(csvAttachmentURI);
+                }
+                else {
+                    Log.w("Text Message Exporter", "HTML file does not exist.");
                 }
             }
 
@@ -1273,6 +1349,14 @@ public class MainActivity extends AppCompatActivity {
 //        return true;
 
         return exportXmlFileEnabled();
+    }
+
+    /**
+     * Check if HTML file should be attached to the email.
+     * @return Whether the HTML file should be attached to the email.
+     */
+    private boolean attachHtmlFileToEmailEnabled() {
+        return exportHtmlFileEnabled();
     }
 
     /**
