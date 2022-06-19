@@ -2,6 +2,7 @@ package com.example.exporttextmessages;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.List;
 
@@ -36,7 +37,16 @@ public class HtmlExporter {
 
             // Write HTML.
             doc.body().appendElement("p").appendText(builder.toString());
-            doc.body().appendElement("p").appendText(message.getBody());
+            Element bodyParagraph = doc.body().appendElement("p");
+
+            boolean firstLine = true;
+            for (String line: message.getBody().split("\n")) {
+                if (!firstLine) {
+                    bodyParagraph.appendElement("br");
+                }
+                bodyParagraph.appendText(line);
+                firstLine = false;
+            }
 
             // Write separator.
             doc.body().appendElement("hr");
