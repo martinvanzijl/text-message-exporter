@@ -23,20 +23,21 @@ public class HtmlExporter {
         for (MessageDetails message: list) {
 
             // Create header.
-            StringBuilder builder = new StringBuilder();
-            if (message.getType() == MessageDetails.TYPE_SENT) {
-                builder.append("Sent to ");
-            }
-            else {
-                builder.append("Received from ");
-            }
-            builder.append(message.getAddress());
-            builder.append(" at ");
-            builder.append(message.getDate().toString());
-            builder.append(":");
+            // E.g. "To: Android Phone 1".
+            int type = message.getType();
+            String line1 = (type == MessageDetails.TYPE_SENT) ? "To: " : "From: ";
+            line1 += message.getAddress();
+
+            // E.g. "Sent at 5 pm on 2 May 2022".
+            String typeName = Utils.getMessageTypeName(type);
+            String line2 = typeName + " at " + message.getDate() + ":";
 
             // Write HTML.
-            doc.body().appendElement("p").appendText(builder.toString());
+            Element headerParagraph = doc.body().appendElement("p");
+            headerParagraph.appendText(line1);
+            headerParagraph.appendElement("br");
+            headerParagraph.appendText(line2);
+
             Element bodyParagraph = doc.body().appendElement("p");
 
             boolean firstLine = true;
