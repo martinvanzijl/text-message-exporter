@@ -1235,10 +1235,40 @@ public class MainActivity extends AppCompatActivity {
             String action = multipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND;
             Intent emailIntent = new Intent(action);
 
+            // Write the message body.
+            StringBuilder builder = new StringBuilder();
+            builder.append("Here are text messages exported from my phone.");
+
+            boolean contactSet = !m_filterContact.isEmpty();
+            boolean startDateSet = !(m_filterStartDate == null);
+            boolean endDateSet = !(m_filterEndDate == null);
+
+            // TODO: Check that the filters were actually used. This is not the case if the "export"
+            // button has not been pressed yet.
+            if (contactSet || startDateSet || endDateSet) {
+                builder.append("\n\nFilters used:\n");
+
+                if (contactSet) {
+                    builder.append("\nContact: " + m_filterContactDisplayName);
+                }
+
+                SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.US);
+
+                if (startDateSet) {
+                    builder.append("\nFrom date: " + formatter.format(m_filterStartDate));
+                }
+
+                if (endDateSet) {
+                    builder.append("\nEnd date: " + formatter.format(m_filterEndDate));
+                }
+            }
+
+            String messageBody = builder.toString();
+
             // Create the message bodies (in case of multiple attachments).
             ArrayList<String> texts = new ArrayList<>();
             for (int i = 0; i < attachmentUris.size(); ++i) {
-                texts.add("Here are text messages exported from my phone.");
+                texts.add(messageBody);
             }
 
             // Check that there is something to attach.
