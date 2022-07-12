@@ -10,10 +10,10 @@
     <string name="csv_file">CSV file</string>
     <string name="html_file">HTML file</string>
     <array name="export_files_types">
-        <item>@string/text</item>
-        <item>@string/xml</item>
         <item>@string/csv</item>
         <item>@string/html</item>
+        <item>@string/text</item>
+        <item>@string/xml</item>
     </array>
     <string name="text">Text</string>
     <string name="xml">XML</string>
