@@ -1012,7 +1012,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return;
             }
-            if (fileToPreview.equals(getString(R.string.html))) {
+            else if (fileToPreview.equals(getString(R.string.html))) {
                 path = getExportedHtmlFilePath();
             }
             else {
