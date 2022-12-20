@@ -43,8 +43,11 @@ import androidx.preference.PreferenceManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -402,6 +405,9 @@ public class MainActivity extends AppCompatActivity {
                 writeExportFileHtml(textMessages);
             }
 
+            // Write filter settings files.
+            writeFilterSettingsFile();
+
             // Update progress bar.
             bar.setProgress(100);
 
@@ -414,6 +420,28 @@ public class MainActivity extends AppCompatActivity {
             // Debug.
             Log.i("Export", "Ending task.");
         });
+    }
+
+    /**
+     * Write a file with the current filter settings.
+     */
+    private void writeFilterSettingsFile() {
+        try {
+            // Get the file name.
+            File dir = getExportFileDir();
+            String fileName = dir + "/last-filter-settings-" + getExportFileType() + ".txt";
+            File outputFile = new File(fileName);
+
+            // Write the settings.
+            BufferedWriter buf = new BufferedWriter(new FileWriter(outputFile, false));
+            buf.append(getFilterSettingsDescription());
+            buf.newLine();
+            buf.close();
+        }
+        catch (IOException e)
+        {
+            Logger.appendLog(this, e.getLocalizedMessage());
+        }
     }
 
     /**
@@ -1238,31 +1266,7 @@ public class MainActivity extends AppCompatActivity {
             // Write the message body.
             StringBuilder builder = new StringBuilder();
             builder.append("Here are text messages exported from my phone.");
-
-            boolean contactSet = !m_filterContact.isEmpty();
-            boolean startDateSet = !(m_filterStartDate == null);
-            boolean endDateSet = !(m_filterEndDate == null);
-
-            // TODO: Check that the filters were actually used. This is not the case if the "export"
-            // button has not been pressed yet.
-            if (contactSet || startDateSet || endDateSet) {
-                builder.append("\n\nFilters used:\n");
-
-                if (contactSet) {
-                    builder.append("\nContact: " + m_filterContactDisplayName);
-                }
-
-                SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.US);
-
-                if (startDateSet) {
-                    builder.append("\nFrom date: " + formatter.format(m_filterStartDate));
-                }
-
-                if (endDateSet) {
-                    builder.append("\nEnd date: " + formatter.format(m_filterEndDate));
-                }
-            }
-
+            builder.append(readFilterSettingsFromFile());
             String messageBody = builder.toString();
 
             // Create the message bodies (in case of multiple attachments).
@@ -1310,6 +1314,70 @@ public class MainActivity extends AppCompatActivity {
             Log.w("Email", e.getLocalizedMessage());
             showToastMessage("Could not find app to send email.");
         }
+    }
+
+    /**
+     * Read the filter settings from the appropriate file.
+     * @return The contents of the file.
+     */
+    private String readFilterSettingsFromFile() {
+        try {
+            // Get the file name.
+            File dir = getExportFileDir();
+            String fileName = dir + "/last-filter-settings-" + getExportFileType() + ".txt";
+            File inputFile = new File(fileName);
+
+            // Read the content.
+            BufferedReader buf = new BufferedReader(new FileReader(inputFile));
+
+            StringBuilder builder = new StringBuilder();
+            String line;
+
+            while ((line = buf.readLine()) != null) {
+                builder.append(line).append("\n");
+            }
+
+            return builder.toString();
+        }
+        catch (IOException e)
+        {
+            Logger.appendLog(this, e.getLocalizedMessage());
+        }
+
+        // Return empty string.
+        return "";
+    }
+
+    /**
+     * Get the filter settings as a String.
+     * @return The filter settings as a String.
+     */
+    private String getFilterSettingsDescription() {
+        boolean contactSet = !m_filterContact.isEmpty();
+        boolean startDateSet = !(m_filterStartDate == null);
+        boolean endDateSet = !(m_filterEndDate == null);
+
+        StringBuilder builder = new StringBuilder();
+
+        if (contactSet || startDateSet || endDateSet) {
+            builder.append("\n\nFilters used:\n");
+
+            if (contactSet) {
+                builder.append("\nContact: " + m_filterContactDisplayName);
+            }
+
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.US);
+
+            if (startDateSet) {
+                builder.append("\nFrom date: " + formatter.format(m_filterStartDate));
+            }
+
+            if (endDateSet) {
+                builder.append("\nEnd date: " + formatter.format(m_filterEndDate));
+            }
+        }
+
+        return builder.toString();
     }
 
     /**
