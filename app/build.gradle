@@ -6,11 +6,11 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.example.exporttextmessages"
+        applicationId "com.martinvz.exporttextmessages"
         minSdk 21
         targetSdk 31
         versionCode 1
-        versionName "13.2"
+        versionName "13.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         setProperty("archivesBaseName", "tme-v$versionName")
