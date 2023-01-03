@@ -14,6 +14,7 @@
     <PreferenceCategory android:title="User Interface">
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="show_progress_bar"
             android:title="Show progress bar for export" />
     </PreferenceCategory>

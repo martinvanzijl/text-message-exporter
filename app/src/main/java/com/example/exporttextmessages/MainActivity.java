@@ -1476,7 +1476,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean showProgressBarEnabled() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getBoolean("show_progress_bar", false);
+        return sharedPreferences.getBoolean("show_progress_bar", true);
     }
 
     /**
